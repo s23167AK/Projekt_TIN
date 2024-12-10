@@ -1,11 +1,19 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+<%-include('./partials/header.ejs') %>
+<main>
+  <section class="banner">
+    <img src="/assets/banner.jpg" alt="Banner biblioteki">
+  </section>
+  <div class="wrapper">
+    <section class="about-library">
+      <h2>O naszej bibliotece</h2>
+      <p>
+        Nasza biblioteka to miejsce pełne inspiracji i wiedzy. Oferujemy szeroki wybór książek,
+        czasopism oraz zasobów cyfrowych. Znajdziesz u nas przestrzeń do pracy, nauki i relaksu.
+        Jesteśmy tu, aby wspierać Twoje pasje i rozwijać zainteresowania. Odwiedź nas i odkryj świat literatury!
+      </p>
+    </section>
+  </div>
+</main>
+<%-include('./partials/footer.ejs') %>
+</body>
 </html>
