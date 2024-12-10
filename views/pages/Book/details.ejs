@@ -1,0 +1,33 @@
+<%- include('../../partials/header.ejs', { activePage: 'books' }) %>
+<main>
+    <h2 id="book-title"><%= book.title %></h2>
+    <table class="book-info-table">
+        <tr>
+            <th>Tytuł</th>
+            <td id="book-title"><%= book.title %></td>
+        </tr>
+        <tr>
+            <th>Autor</th>
+            <td id="book-author"><%= book.author %></td>
+        </tr>
+        <tr>
+            <th>Rok Publikacji</th>
+            <td id="book-year"><%= book.publication_year %></td>
+        </tr>
+        <tr>
+            <th>Gatunek</th>
+            <td id="book-genre"><%= book.genre %></td>
+        </tr>
+        <tr>
+            <th>Opis</th>
+            <td id="book-description"><%= book.description %></td>
+        </tr>
+    </table>
+
+    <div class="action-buttons">
+        <a href="/books" class="cancel-button">Powrót do listy</a>
+        <a href="/books/edit/<%= book.id_book %>" class="edit-button">Edytuj Książkę</a>
+    </div>
+</main>
+<%- include('../../partials/footer.ejs') %>
+

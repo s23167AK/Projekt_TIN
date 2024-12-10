@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS book(
     author VARCHAR(255) NOT NULL,
     publication_year INT NOT NULL,
     genre VARCHAR(255) NOT NULL,
-    quantity INT NOT NULL,
     description TEXT NOT NULL
     );
 
@@ -30,19 +29,19 @@ CREATE TABLE IF NOT EXISTS borrowing (
     FOREIGN KEY (id_book) REFERENCES book(id_book) ON DELETE CASCADE
 
 );
-INSERT INTO book (title, author, publication_year, genre, quantity, description)
+INSERT INTO book (title, author, publication_year, genre, description)
 VALUES ('Lalka', 'Bolesław Prus', 1890, 'Powieść', 5, 'Opowieść o losach Stanisława Wokulskiego.');
 
-INSERT INTO book (title, author, publication_year, genre, quantity, description)
+INSERT INTO book (title, author, publication_year, genre, description)
 VALUES ('W pustyni i w puszczy', 'Henryk Sienkiewicz', 1911, 'Powieść przygodowa', 3, 'Historia dzieci porwanych w Afryce.');
 
-INSERT INTO book (title, author, publication_year, genre, quantity, description)
+INSERT INTO book (title, author, publication_year, genre, description)
 VALUES ('Pan Tadeusz', 'Adam Mickiewicz', 1834, 'Epopeja', 4, 'Ostatni zajazd na Litwie.');
 
-INSERT INTO book (title, author, publication_year, genre, quantity, description)
+INSERT INTO book (title, author, publication_year, genre, description)
 VALUES ('Quo Vadis', 'Henryk Sienkiewicz', 1896, 'Powieść historyczna', 6, 'Miłość w czasach prześladowań chrześcijan.');
 
-INSERT INTO book (title, author, publication_year, genre, quantity, description)
+INSERT INTO book (title, author, publication_year, genre, description)
 VALUES ('Dziady', 'Adam Mickiewicz', 1823, 'Dramat romantyczny', 2, 'Dramat poświęcony duchowości i historii Polski.');
 
 INSERT INTO reader (first_name, last_name, email, phone)
