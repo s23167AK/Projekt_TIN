@@ -1,0 +1,22 @@
+<h1>Lista wypożyczeń</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Tytuł książki</th>
+        <th>Wypożyczający</th>
+        <th>Akcje</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% borrowings.forEach(borrowing => { %>
+        <tr>
+            <td><%= book.title %></td>
+            <td><%= reader.name %></td>
+            <td>
+                <a href="borrowing-details/<%= borrowing.id %>" class="details-button">Szczegóły</a>
+                <button class="delete-button" onclick="deleteBorrowing(<%= borrowing.id %>)">Usuń</button>
+            </td>
+        </tr>
+    <% }) %>
+    </tbody>
+</table>

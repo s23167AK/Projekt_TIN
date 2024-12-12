@@ -1,0 +1,24 @@
+<%- include('../../partials/header.ejs', { activePage: 'readers' }) %>
+<main>
+    <h2>Szczegóły czytelnika</h2>
+    <table class="book-info-table">
+        <tr>
+            <th>Imię</th>
+            <td id="reader-firstname"><%= reader.first_name %></td>
+        </tr>
+        <tr>
+            <th>Nazwisko</th>
+            <td id="reader-lastname"><%= reader.last_name %></td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td id="reader-email"><%= reader.email %></td>
+        </tr>
+        <tr>
+            <th>Telefon</th>
+            <td id="reader-phone"><%= reader.phone %></td>
+        </tr>
+    </table>
+    <a href="/reader-edit/<%= reader.id_reader %>" class="edit-button">Edytuj Czytelnika</a>
+</main>
+<%- include('../../partials/footer.ejs') %>

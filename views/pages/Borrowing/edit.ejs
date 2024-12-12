@@ -1,0 +1,33 @@
+<%- include('../../partials/header.ejs', { activePage: 'borrowings' }) %>
+<main>
+    <h2>Edytuj wypożyczenie</h2>
+    <form class="edit-form" action="/borrowing-edit/<%= borrowing.id_borrow %>" method="POST">
+        <label for="book">Wybierz Książkę:</label>
+        <select id="book" name="book_id" required>
+            <option value="">-- Wybierz książkę --</option>
+            <% books.forEach(book => { %>
+                <option value="<%= book.id_book %>" <%= borrowing.id_book === book.id_book ? 'selected' : '' %>><%= book.title %></option>
+            <% }) %>
+        </select>
+
+        <label for="reader">Wybierz Czytelnika:</label>
+        <select id="reader" name="reader_id" required>
+            <option value="">-- Wybierz czytelnika --</option>
+            <% readers.forEach(reader => { %>
+                <option value="<%= reader.id_reader %>" <%= borrowing.id_reader === reader.id_reader ? 'selected' : '' %>><%= reader.name %></option>
+            <% }) %>
+        </select>
+
+        <label for="borrow-date">Data Wypożyczenia:</label>
+        <input type="date" id="borrow-date" name="borrow_date" value="<%= borrowing.borrow_date %>" required>
+
+        <label for="return-date">Data Zwrotu:</label>
+        <input type="date" id="return-date" name="return_date" value="<%= borrowing.return_date %>" required>
+
+        <div class="action-buttons">
+            <button type="submit" class="submit-button">Zapisz Zmiany</button>
+            <a href="/borrowing-details/<%= borrowing.id_reader %>" class="cancel-button">Anuluj</a>
+        </div>
+    </form>
+</main>
+<%- include('../../partials/footer.ejs') %>
