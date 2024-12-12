@@ -1,0 +1,38 @@
+<%- include('../../partials/header.ejs', { activePage: 'borrowings' }) %>
+<main>
+    <script src="/js/validationBorrowing.js"></script>
+    <h2>Dodaj nowe wypożyczenie</h2>
+    <form action="/borrowing-add" method="POST" class="edit-form">
+        <label for="book">Wybierz Książkę:</label>
+        <select id="book" name="book_id" required>
+            <option value="">-- Wybierz książkę --</option>
+            <% books.forEach(book => { %>
+                <option value="<%= book.id_book %>"><%= book.title %></option>
+            <% }) %>
+        </select>
+        <span id="errorBook" class="errors-text"></span>
+
+        <label for="reader">Wybierz Czytelnika:</label>
+        <select id="reader" name="reader_id" required>
+            <option value="">-- Wybierz czytelnika --</option>
+            <% readers.forEach(reader => { %>
+                <option value="<%= reader.id_reader %>"><%= reader.name %></option>
+            <% }) %>
+        </select>
+        <span id="errorReader" class="errors-text"></span>
+
+        <label for="borrow-date">Data Wypożyczenia:</label>
+        <input type="date" id="borrow-date" name="borrow_date" required>
+        <span id="errorBorrowData" class="errors-text"></span>
+
+        <label for="return-date">Data Zwrotu:</label>
+        <input type="date" id="return-date" name="return_date" required>
+        <span id="errorReturnData" class="errors-text"></span>
+        <p id="errorSummary" class="errors-text"></p><br>
+        <div class="action-buttons">
+            <button type="submit" class="submit-button">Dodaj Wypożyczenie</button>
+            <a href="/borrowings" class="cancel-button">Anuluj</a>
+        </div>
+    </form>
+</main>
+<%- include('../../partials/footer.ejs') %>
