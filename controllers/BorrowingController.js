@@ -1,55 +1,139 @@
 const BorrowingRepository = require('../repository/BorrowingRepository');
+const BookRepository = require('../repository/BookRepository');
+const ReaderRepository = require('../repository/ReaderRepository');
+
 
 exports.getAllBorrowings = async (req, res) => {
     try {
         const borrowings = await BorrowingRepository.getAllBorrowings();
-        res.status(200).json(borrowings);
+        res.render('pages/borrowing/list', {
+            borrowings: borrowings,
+            navLocation: 'borrowings'
+        });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).send('Błąd serwera: ' + error.message);
     }
 };
 
-exports.getBorrowingById = async (req, res) => {
+
+exports.showBorrowingDetails = async (req, res) => {
     try {
         const borrowing = await BorrowingRepository.getBorrowingById(req.params.id);
         if (!borrowing) {
-            return res.status(404).json({ message: 'Wypożyczenie nie znalezione' });
+            return res.status(404).send('Nie znaleziono wypożyczenia');
         }
-        res.status(200).json(borrowing);
+        res.render('pages/borrowing/details', {
+            borrowing: borrowing,
+            navLocation: 'borrowings'
+        });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).send('Błąd serwera: ' + error.message);
+    }
+};
+
+exports.showCreateForm = async (req, res) => {
+    try {
+        const readers = await ReaderRepository.getAllReaders();
+        const books = await BookRepository.getAllBooks();
+
+        res.render('pages/borrowing/form', {
+            borrowing: {}, // Pusty obiekt wypożyczenia (dla nowego wypożyczenia)
+            pageTitle: 'Dodaj Nowe Wypożyczenie',
+            formMode: 'createNew',
+            btnLabel: 'Dodaj Wypożyczenie',
+            formAction: '/borrowings/add',
+            navLocation: 'borrowings',
+            readers: readers,
+            books: books,
+            validationErrors: []
+        });
+    } catch (error) {
+        res.status(500).send('Błąd serwera: ' + error.message);
     }
 };
 
 exports.createBorrowing = async (req, res) => {
+    const borrowingData = { ...req.body };
+
     try {
-        const newBorrowing = await BorrowingRepository.createBorrowing(req.body);
-        res.status(201).json(newBorrowing);
+        await BorrowingRepository.createBorrowing(borrowingData);
+        res.redirect('/borrowings');
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        const readers = await ReaderRepository.getAllReaders();
+        const books = await BookRepository.getAllBooks();
+
+        res.render('pages/borrowing/form', {
+            borrowing: borrowingData,
+            pageTitle: 'Dodaj Nowe Wypożyczenie',
+            formMode: 'createNew',
+            btnLabel: 'Dodaj Wypożyczenie',
+            formAction: '/borrowings/add',
+            navLocation: 'borrowings',
+            readers: readers,
+            books: books,
+            validationErrors: error.errors || []
+        });
+    }
+};
+
+exports.showEditForm = async (req, res) => {
+    try {
+        const borrowing = await BorrowingRepository.getBorrowingById(req.params.id);
+        const readers = await ReaderRepository.getAllReaders();
+        const books = await BookRepository.getAllBooks();
+
+        if (!borrowing) {
+            return res.status(404).send('Nie znaleziono wypożyczenia');
+        }
+
+        res.render('pages/borrowing/edit', {
+            borrowing: borrowing,
+            pageTitle: 'Edytuj Wypożyczenie',
+            formMode: 'edit',
+            btnLabel: 'Zapisz Zmiany',
+            formAction: `/borrowings/edit/${req.params.id}`,
+            navLocation: 'borrowings',
+            readers: readers,
+            books: books,
+            validationErrors: []
+        });
+    } catch (error) {
+        res.status(500).send('Błąd serwera: ' + error.message);
     }
 };
 
 exports.updateBorrowing = async (req, res) => {
+    const borrowingId = req.params.id;
+    const borrowingData = { ...req.body };
+
     try {
-        const updated = await BorrowingRepository.updateBorrowing(req.params.id, req.body);
-        if (updated[0] === 0) {
-            return res.status(404).json({ message: 'Wypożyczenie nie znalezione' });
-        }
-        res.status(200).json({ message: 'Wypożyczenie zaktualizowane' });
+        await BorrowingRepository.updateBorrowing(borrowingId, borrowingData);
+        res.redirect('/borrowings');
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        const readers = await ReaderRepository.getAllReaders();
+        const books = await BookRepository.getAllBooks();
+
+        res.render('pages/borrowing/form', {
+            borrowing: borrowingData,
+            pageTitle: 'Edytuj Wypożyczenie',
+            formMode: 'edit',
+            btnLabel: 'Zapisz Zmiany',
+            formAction: `/borrowings/edit/${borrowingId}`,
+            navLocation: 'borrowings',
+            readers: readers,
+            books: books,
+            validationErrors: error.errors || []
+        });
     }
 };
 
 exports.deleteBorrowing = async (req, res) => {
+    const borrowingId = req.params.id;
+
     try {
-        const deleted = await BorrowingRepository.deleteBorrowing(req.params.id);
-        if (deleted === 0) {
-            return res.status(404).json({ message: 'Wypożyczenie nie znalezione' });
-        }
-        res.status(200).json({ message: 'Wypożyczenie usunięte' });
+        await BorrowingRepository.deleteBorrowing(borrowingId);
+        res.redirect('/borrowings');
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).send('Błąd serwera: ' + error.message);
     }
 };

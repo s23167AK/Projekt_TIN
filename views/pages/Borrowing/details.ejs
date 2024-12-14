@@ -1,0 +1,28 @@
+<%- include('../../partials/header.ejs', { activePage: 'borrowings' }) %>
+<main>
+    <h2>Wypożyczenie #<%= borrowing.id_borrow %></h2>
+    <table class="borrowing-info-table">
+        <tr>
+            <th>Imię i Nazwisko</th>
+            <td><%= borrowing.reader.first_name + " " + borrowing.reader.last_name %></td>
+        </tr>
+        <tr>
+            <th>Tytuł Książki</th>
+            <td><%= borrowing.book.title %></td>
+        </tr>
+        <tr>
+            <th>Data Wypożyczenia</th>
+            <td><%= borrowing.borrow_date %></td>
+        </tr>
+        <tr>
+            <th>Data Zwrotu</th>
+            <td><%= borrowing.return_date || 'Brak' %></td>
+        </tr>
+    </table>
+
+    <div class="action-buttons">
+        <a href="/borrowings" class="cancel-button">Powrót do listy</a>
+        <a href="/borrowings/edit/<%= borrowing.id_borrow %>" class="edit-button">Edytuj Wypożyczenie</a>
+    </div>
+</main>
+<%- include('../../partials/footer.ejs') %>

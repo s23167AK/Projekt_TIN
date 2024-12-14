@@ -1,0 +1,28 @@
+<%- include('../../partials/header.ejs', { activePage: 'readers' }) %>
+<main>
+    <h2 id="reader-name"><%= reader.first_name %> <%= reader.last_name %></h2>
+    <table class="reader-info-table">
+        <tr>
+            <th>Imię</th>
+            <td id="reader-first-name"><%= reader.first_name %></td>
+        </tr>
+        <tr>
+            <th>Nazwisko</th>
+            <td id="reader-last-name"><%= reader.last_name %></td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td id="reader-email"><%= reader.email %></td>
+        </tr>
+        <tr>
+            <th>Telefon</th>
+            <td id="reader-phone"><%= reader.phone %></td>
+        </tr>
+    </table>
+
+    <div class="action-buttons">
+        <a href="/readers" class="cancel-button">Powrót do listy</a>
+        <a href="/readers/edit/<%= reader.id_reader %>" class="edit-button">Edytuj Czytelnika</a>
+    </div>
+</main>
+<%- include('../../partials/footer.ejs') %>

@@ -7,23 +7,25 @@ module.exports = () => {
     Book.hasMany(Borrowing, {
         as: 'borrowing',
         foreignKey: { name: 'id_book', allowNull: false },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE' // Usuwaj wypożyczenia, jeśli książka zostanie usunięta
     });
 
     Borrowing.belongsTo(Book, {
         as: 'book',
-        foreignKey: { name: 'id_book', allowNull: false }
+        foreignKey: { name: 'id_book', allowNull: false },
+        onDelete: 'CASCADE'
     });
 
     Reader.hasMany(Borrowing, {
         as: 'borrowing',
         foreignKey: { name: 'id_reader', allowNull: false },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE' // Usuwaj wypożyczenia, jeśli czytelnik zostanie usunięty
     });
 
     Borrowing.belongsTo(Reader, {
         as: 'reader',
-        foreignKey: { name: 'id_reader', allowNull: false }
+        foreignKey: { name: 'id_reader', allowNull: false },
+        onDelete: 'CASCADE'
     });
 
     return sequelize
@@ -50,8 +52,8 @@ module.exports = () => {
         })
         .then(() => {
             return Borrowing.bulkCreate([
-                { borrow_date: '2024-11-01', return_date: '2024-11-15', id_reader: 1, id_book: [0] },
-                { borrow_date: '2024-11-05', return_date: '2024-11-20', id_reader: 2, id_book: [1] },
+                { borrow_date: '2024-11-01', return_date: '2024-11-15', id_reader: 1, id_book: 1 },
+                { borrow_date: '2024-11-05', return_date: '2024-11-20', id_reader: 2, id_book: 2 },
                 { borrow_date: '2024-11-10', return_date: '2024-11-25', id_reader: 3, id_book: 3 },
                 { borrow_date: '2024-11-12', return_date: '2024-11-22', id_reader: 4, id_book: 4 },
                 { borrow_date: '2024-11-15', return_date: null, id_reader: 5, id_book: 5 }
