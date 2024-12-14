@@ -1,36 +1,56 @@
 <%- include('../../partials/header.ejs', { activePage: 'borrowings' }) %>
 <main>
-    <script src="/js/validationBorrowing.js"></script>
-    <h2>Dodaj nowe wypożyczenie</h2>
-    <form action="/borrowing-add" method="POST" class="edit-form">
-        <label for="book">Wybierz Książkę:</label>
-        <select id="book" name="book_id" required>
-            <option value="">-- Wybierz książkę --</option>
-            <% books.forEach(book => { %>
-                <option value="<%= book.id_book %>"><%= book.title %></option>
-            <% }) %>
-        </select>
-        <span id="errorBook" class="errors-text"></span>
+    <h2><%= pageTitle %></h2>
+    <form class="borrowing-form" action="<%= formAction %>" method="POST">
 
-        <label for="reader">Wybierz Czytelnika:</label>
-        <select id="reader" name="reader_id" required>
+        <!-- Wybór czytelnika -->
+        <label for="reader">Czytelnik:</label>
+        <select id="reader" name="id_reader" required class="<%= validationErrors && validationErrors.find(err => err.path === 'id_reader') ? 'error-input' : '' %>">
             <option value="">-- Wybierz czytelnika --</option>
             <% readers.forEach(reader => { %>
-                <option value="<%= reader.id_reader %>"><%= reader.name %></option>
+                <option value="<%= reader.id_reader %>" <%= borrowing.id_reader == reader.id_reader ? 'selected' : '' %>><%= reader.first_name %> <%= reader.last_name %></option>
             <% }) %>
         </select>
-        <span id="errorReader" class="errors-text"></span>
+        <span id="errorReader" class="error-text">
+            <%= validationErrors && validationErrors.find(err => err.path === 'id_reader') ? 'Pole \'Czytelnik\' jest wymagane' : '' %>
+        </span>
 
-        <label for="borrow-date">Data Wypożyczenia:</label>
-        <input type="date" id="borrow-date" name="borrow_date" required>
-        <span id="errorBorrowData" class="errors-text"></span>
+        <!-- Wybór książki -->
+        <label for="book">Książka:</label>
+        <select id="book" name="id_book" required class="<%= validationErrors && validationErrors.find(err => err.path === 'id_book') ? 'error-input' : '' %>">
+            <option value="">-- Wybierz książkę --</option>
+            <% books.forEach(book => { %>
+                <option value="<%= book.id_book %>" <%= borrowing.id_book == book.id_book ? 'selected' : '' %>><%= book.title %></option>
+            <% }) %>
+        </select>
+        <span id="errorBook" class="error-text">
+            <%= validationErrors && validationErrors.find(err => err.path === 'id_book') ? 'Pole \'Książka\' jest wymagane' : '' %>
+        </span>
 
-        <label for="return-date">Data Zwrotu:</label>
-        <input type="date" id="return-date" name="return_date" required>
-        <span id="errorReturnData" class="errors-text"></span>
-        <p id="errorSummary" class="errors-text"></p><br>
+        <!-- Data wypożyczenia -->
+        <label for="borrow_date">Data Wypożyczenia:</label>
+        <input type="date" id="borrow_date" name="borrow_date" value="<%= borrowing.borrow_date || '' %>" required class="<%= validationErrors && validationErrors.find(err => err.path === 'borrow_date') ? 'error-input' : '' %>">
+        <span id="errorBorrowDate" class="error-text">
+            <%= validationErrors && validationErrors.find(err => err.path === 'borrow_date') ? validationErrors.find(err => err.path === 'borrow_date').message : '' %>
+        </span>
+
+        <!-- Data zwrotu -->
+        <label for="return_date">Data Zwrotu:</label>
+        <input type="date" id="return_date" name="return_date" value="<%= borrowing.return_date || '' %>" class="<%= validationErrors && validationErrors.find(err => err.path === 'return_date') ? 'error-input' : '' %>">
+        <span id="errorReturnDate" class="error-text">
+            <%= validationErrors && validationErrors.find(err => err.path === 'return_date') ? validationErrors.find(err => err.path === 'return_date').message : '' %>
+        </span>
+
+        <!-- Podsumowanie błędów -->
+        <span id="errorsSummary" class="errorform-text">
+            <% if (validationErrors && validationErrors.length > 0) { %>
+                Formularz zawiera błędy. Popraw wprowadzone dane.
+            <% } %>
+        </span>
+
+        <!-- Przyciski akcji -->
         <div class="action-buttons">
-            <button type="submit" class="submit-button">Dodaj Wypożyczenie</button>
+            <button type="submit" class="submit-button"><%= btnLabel %></button>
             <a href="/borrowings" class="cancel-button">Anuluj</a>
         </div>
     </form>

@@ -1,29 +1,35 @@
 <%- include('../../partials/header.ejs', { activePage: 'readers' }) %>
 <main>
-    <h1>Czytelnicy</h1>
-    <table>
-        <thead>
+<h1>Lista Czytelników</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Imię</th>
+        <th>Nazwisko</th>
+        <th>Email</th>
+        <th>Telefon</th>
+        <th>Akcje</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% readers.forEach(reader => { %>
         <tr>
-            <th>ID</th>
-            <th>Imię</th>
-            <th>Nazwisko</th>
-            <th>Akcje</th>
+        <td><%= reader.id_reader %></td>
+        <td><%= reader.first_name %></td>
+        <td><%= reader.last_name %></td>
+        <td><%= reader.email %></td>
+        <td><%= reader.phone %></td>
+        <td>
+        <a href="/readers/details/<%= reader.id_reader %>" class="details-button">Szczegóły</a>
+        <form action="/readers/delete/<%= reader.id_reader %>" method="POST" style="display: inline;">
+            <button type="submit" class="delete-button">Usuń</button>
+        </form>
+        </td>
         </tr>
-        </thead>
-        <tbody>
-        <% readers.forEach(reader => { %>
-            <tr>
-                <td><%= reader.id_reader %></td>
-                <td><%= reader.first_name %></td>
-                <td><%= reader.last_name %></td>
-                <td>
-                    <a href="/reader-details/<%= reader.id_reader %>" class="details-button">Szczegóły</a>
-                    <a href="/reader/delete/<%= reader.id_reader %>" class="delete-button">Usuń</a>
-                </td>
-            </tr>
         <% }) %>
-        </tbody>
-    </table>
-    <a href="/reader-form" class="submit-button">Dodaj Nowego Czytelnika</a>
+    </tbody>
+</table>
+<a href="/readers/add" class="submit-button">Dodaj Nowego Czytelnika</a>
 </main>
 <%- include('../../partials/footer.ejs') %>

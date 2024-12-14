@@ -2,18 +2,12 @@ const Borrowing = require('../model/Borrowing');
 const Reader = require('../model/Reader');
 const Book = require('../model/Book');
 
-exports.getAllBorrowings = () => {
+exports.getAllBorrowings = async () => {
     return Borrowing.findAll({
         include: [
-            {
-                model: Reader,
-                as: 'reader',
-            },
-            {
-                model: Book,
-                as: 'book',
-            },
-        ],
+            { model: Reader, as: 'reader' },
+            { model: Book, as: 'book' }
+        ]
     });
 };
 

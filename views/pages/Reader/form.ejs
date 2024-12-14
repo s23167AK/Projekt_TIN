@@ -1,26 +1,41 @@
 <%- include('../../partials/header.ejs', { activePage: 'readers' }) %>
 <main>
-    <script src="/js/validationReader.js"></script>
-    <h2>Dodaj nowego czytelnika</h2>
-    <form action="/reader-add" method="POST">
-        <label for="firstName">Imię:</label>
-        <input type="text" id="firstName" name="firstName" placeholder="Wprowadź imię" required>
-        <span id="errorFirstName" class="errors-text"></span>
+    <h2><%= pageTitle %></h2>
+    <form class="reader-form" action="<%= formAction %>" method="POST">
+        <label for="first_name">Imię:</label>
+        <input type="text" id="first_name" name="first_name" value="<%= reader.first_name || '' %>" placeholder="Wpisz imię czytelnika" required>
+        <span id="errorFirstName" class="error-text">
+            <%= validationErrors && validationErrors.find(err => err.path === 'first_name') ? validationErrors.find(err => err.path === 'first_name').message : '' %>
+        </span>
 
-        <label for="lastName">Nazwisko:</label>
-        <input type="text" id="lastName" name="lastName" placeholder="Wprowadź nazwisko" required>
-        <span id="errorLastName" class="errors-text"></span>
+        <label for="last_name">Nazwisko:</label>
+        <input type="text" id="last_name" name="last_name" value="<%= reader.last_name || '' %>" placeholder="Wpisz nazwisko czytelnika" required>
+        <span id="errorLastName" class="error-text">
+            <%= validationErrors && validationErrors.find(err => err.path === 'last_name') ? validationErrors.find(err => err.path === 'last_name').message : '' %>
+        </span>
 
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" name="email" placeholder="Wprowadź adres e-mail" required>
-        <span id="errorEmail" class="errors-text"></span>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="<%= reader.email || '' %>" placeholder="Wpisz adres email" required>
+        <span id="errorEmail" class="error-text">
+            <%= validationErrors && validationErrors.find(err => err.path === 'email') ? validationErrors.find(err => err.path === 'email').message : '' %>
+        </span>
 
         <label for="phone">Telefon:</label>
-        <input type="tel" id="phone" name="phone" placeholder="Wprowadź numer telefonu" pattern="[0-9]{9}" required>
-        <span id="errorPhone" class="errors-text"></span>
-        <p id="errorSummary" class="errors-text"></p><br>
-        <button type="submit" class="submit-button">Dodaj Czytelnika</button>
-        <a href="/readers" class="cancel-button">Anuluj</a>
+        <input type="text" id="phone" name="phone" value="<%= reader.phone || '' %>" placeholder="Wpisz numer telefonu (9 cyfr)" pattern="\d{9}" required>
+        <span id="errorPhone" class="error-text">
+            <%= validationErrors && validationErrors.find(err => err.path === 'phone') ? validationErrors.find(err => err.path === 'phone').message : '' %>
+        </span>
+
+        <span id="errorsSummary" class="errorform-text">
+            <% if (validationErrors && validationErrors.length > 0) { %>
+                Formularz zawiera błędy. Popraw wprowadzone dane.
+            <% } %>
+        </span>
+
+        <div class="action-buttons">
+            <button type="submit" class="submit-button"><%= btnLabel %></button>
+            <a href="/readers" class="cancel-button">Anuluj</a>
+        </div>
     </form>
 </main>
 <%- include('../../partials/footer.ejs') %>

@@ -1,25 +1,28 @@
 <%- include('../../partials/header.ejs', { activePage: 'borrowings' }) %>
 <main>
-    <h2>Szczegóły Wypożyczenia</h2>
-    <table class="book-info-table">
+    <h2>Wypożyczenie #<%= borrowing.id_borrow %></h2>
+    <table class="borrowing-info-table">
         <tr>
-            <th>Tytuł Książki</th>
-            <td id="book-title"><%= borrowing.id_book %></td>
+            <th>Imię i Nazwisko</th>
+            <td><%= borrowing.reader.first_name + " " + borrowing.reader.last_name %></td>
         </tr>
         <tr>
-            <th>Wypożyczający</th>
-            <td id="borrower-name"><%= borrowing.id_reader %></td>
+            <th>Tytuł Książki</th>
+            <td><%= borrowing.book.title %></td>
         </tr>
         <tr>
             <th>Data Wypożyczenia</th>
-            <td id="borrow-date"><%= borrowing.bo %></td>
+            <td><%= borrowing.borrow_date %></td>
         </tr>
         <tr>
             <th>Data Zwrotu</th>
-            <td id="return-date"><%= borrowing.returnDate %></td>
+            <td><%= borrowing.return_date || 'Brak' %></td>
         </tr>
     </table>
-    <a href="/borrowings" class="edit-button">Powrót do Listy Wypożyczeń</a>
-    <a href="/borrowing-edit/<%= borrowing.id_borrow %>" class="edit-button">Edytuj</a>
+
+    <div class="action-buttons">
+        <a href="/borrowings" class="cancel-button">Powrót do listy</a>
+        <a href="/borrowings/edit/<%= borrowing.id_borrow %>" class="edit-button">Edytuj Wypożyczenie</a>
+    </div>
 </main>
 <%- include('../../partials/footer.ejs') %>

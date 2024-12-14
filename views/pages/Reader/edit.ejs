@@ -1,22 +1,22 @@
 <%- include('../../partials/header.ejs', { activePage: 'readers' }) %>
 <main>
-    <h2>Edytuj czytelnika</h2>
-    <form class="edit-form" action="/reader-edit/<%= reader.id_reader %>" method="POST">
-        <label for="firstname">Imię:</label>
-        <input type="text" id="firstname" name="firstname" value="<%= reader.first_name %>" required>
+    <h2>Edytuj Czytelnika</h2>
+    <form class="edit-form" action="/readers/edit/<%= reader.id_reader %>" method="POST">
+        <label for="first_name">Imię:</label>
+        <input type="text" id="first_name" name="first_name" value="<%= reader.first_name %>" placeholder="Wpisz imię czytelnika" required class="input-field">
 
-        <label for="lastname">Nazwisko:</label>
-        <input type="text" id="lastname" name="lastname" value="<%= reader.last_name %>" required>
+        <label for="last_name">Nazwisko:</label>
+        <input type="text" id="last_name" name="last_name" value="<%= reader.last_name %>" placeholder="Wpisz nazwisko czytelnika" required class="input-field">
 
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="<%= reader.email %>" required>
+        <input type="email" id="email" name="email" value="<%= reader.email %>" placeholder="Wpisz adres email" required class="input-field">
 
         <label for="phone">Telefon:</label>
-        <input type="tel" id="phone" name="phone" value="<%= reader.phone %>" pattern="[0-9]{3}-[0-9]{3}-[0-9]{3}" required>
+        <input type="text" id="phone" name="phone" value="<%= reader.phone %>" placeholder="Wpisz numer telefonu (9 cyfr)" pattern="\d{9}" required class="input-field">
 
         <div class="action-buttons">
             <button type="submit" class="submit-button">Zapisz Zmiany</button>
-            <a href="/reader-details/<%= reader.id_reader %>" class="cancel-button">Anuluj</a>
+            <a href="/readers/details/<%= reader.id_reader %>" class="cancel-button">Anuluj</a>
         </div>
     </form>
 </main>
