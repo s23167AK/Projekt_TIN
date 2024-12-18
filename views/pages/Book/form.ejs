@@ -1,7 +1,8 @@
 <%- include('../../partials/header.ejs', { activePage: 'books' }) %>
 <main>
     <h2><%= pageTitle %></h2>
-    <form class="booking-form" action="<%= formAction %>" method="POST" onsubmit="return validateBookForm();">
+    <script src="/js/validateBookForm.js"></script>
+    <form class="booking-form" action="<%= formAction %>" method="POST" onsubmit="return validateForm();">
         <label for="title">Tytuł:</label>
         <input type="text" id="title" name="title" value="<%= book.title || '' %>" placeholder="Wpisz tytuł książki" required>
         <span id="errorTitle" class="error-text">
@@ -39,7 +40,7 @@
             <%= validationErrors && validationErrors.find(err => err.path === 'description') ? validationErrors.find(err => err.path === 'description').message : '' %>
         </span>
 
-        <span id="errorsSummary" class="errorform-text">
+        <span id="errorSummary" class="errorform-text">
             <% if (validationErrors && validationErrors.length > 0) { %>
                 Formularz zawiera błędy. Popraw wprowadzone dane.
             <% } %>

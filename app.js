@@ -18,7 +18,7 @@ const app = express();
 // Konfiguracja silnika widoków (EJS)
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
+app.use(express.static('public'));
 // Middleware
 app.use(logger('dev'));
 app.use(express.json());
