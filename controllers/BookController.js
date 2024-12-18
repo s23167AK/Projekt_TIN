@@ -1,16 +1,37 @@
 const BookRepository = require('../repository/BookRepository');
 
+// exports.getAllBooks = async (req, res) => {
+//     try {
+//         const books = await BookRepository.getAllBooks();
+//         res.render('pages/book/list', {
+//             books: books,
+//             navLocation: 'books'
+//         });
+//     } catch (error) {
+//         res.status(500).send('Błąd serwera: ' + error.message);
+//     }
+// };
 exports.getAllBooks = async (req, res) => {
     try {
-        const books = await BookRepository.getAllBooks();
+        const limit = 3;
+        const page = parseInt(req.query.page) || 1;
+        const offset = (page - 1) * limit;
+
+        const { count, rows: books } = await BookRepository.getPaginatedBooks(limit, offset);
+
+        const totalPages = Math.ceil(count / limit);
+
         res.render('pages/book/list', {
             books: books,
+            currentPage: page,
+            totalPages: totalPages,
             navLocation: 'books'
         });
     } catch (error) {
         res.status(500).send('Błąd serwera: ' + error.message);
     }
 };
+
 exports.showBookDetails = async (req, res) => {
     try {
         const book = await BookRepository.getBookById(req.params.id);
@@ -30,14 +51,14 @@ exports.showCreateForm = (req, res) => {
     const genres = ['Powieść', 'Dramat', 'Fantasy', 'Historyczna', 'Sci-Fi', 'Przygodowa']; // Lista gatunków
 
     res.render('pages/book/form', {
-        book: {}, // Pusty obiekt książki (dla nowej książki)
+        book: {},
         pageTitle: 'Dodaj Nową Książkę',
         formMode: 'createNew',
         btnLabel: 'Dodaj Książkę',
-        formAction: '/books/add', // Ścieżka akcji POST dla dodania książki
+        formAction: '/books/add',
         navLocation: 'books',
         genres: genres,
-        validationErrors: [] // Lista błędów walidacji (jeśli wystąpią)
+        validationErrors: []
     });
 };
 
@@ -52,14 +73,14 @@ exports.createBook = async (req, res) => {
         const genres = ['Powieść', 'Dramat', 'Fantasy', 'Historyczna', 'Sci-Fi', 'Przygodowa']; // Lista gatunków
 
         res.render('pages/book/form', {
-            book: bookData, // Dane wprowadzone przez użytkownika
+            book: bookData,
             pageTitle: 'Dodaj Nową Książkę',
             formMode: 'createNew',
             btnLabel: 'Dodaj Książkę',
             formAction: '/books/add',
             navLocation: 'books',
-            genres: genres, // Przekazanie listy gatunków
-            validationErrors: error.errors || [] // Przekazanie błędów walidacji
+            genres: genres,
+            validationErrors: error.errors || []
         });
     }
 };

@@ -2,9 +2,19 @@ const ReaderRepository = require('../repository/ReaderRepository');
 
 exports.getAllReaders = async (req, res) => {
     try {
-        const readers = await ReaderRepository.getAllReaders();
+        const limit = 3;
+        const page = parseInt(req.query.page) || 1;
+        const offset = (page - 1) * limit;
+
+        // Pobranie danych z repozytorium
+        const { count, rows: readers } = await ReaderRepository.getPaginatedReaders(limit, offset);
+
+        const totalPages = Math.ceil(count / limit);
+
         res.render('pages/reader/list', {
             readers: readers,
+            currentPage: page,
+            totalPages: totalPages,
             navLocation: 'readers'
         });
     } catch (error) {

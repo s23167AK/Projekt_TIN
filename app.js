@@ -11,6 +11,7 @@ const indexRouter = require('./routes/index');
 const BookRoutes = require('./routes/BookRoutes');
 const ReaderRoutes = require('./routes/ReaderRoutes');
 const BorrowingRoutes = require('./routes/BorrowingRoutes');
+const AuthRoutes = require('./routes/AuthRoutes');
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use('/', indexRouter);
 app.use('/books', BookRoutes);
 app.use('/readers', ReaderRoutes);
 app.use('/borrowings', BorrowingRoutes);
+app.use('/', AuthRoutes);
 
 // Obsługa błędów 404
 app.use((req, res, next) => {

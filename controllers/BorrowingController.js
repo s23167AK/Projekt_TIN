@@ -5,10 +5,20 @@ const ReaderRepository = require('../repository/ReaderRepository');
 
 exports.getAllBorrowings = async (req, res) => {
     try {
-        const borrowings = await BorrowingRepository.getAllBorrowings();
+        const limit = 3; // Liczba wypożyczeń na stronę
+        const page = parseInt(req.query.page) || 1; // Numer strony z parametru `?page=`
+        const offset = (page - 1) * limit; // Oblicz przesunięcie
+
+        // Pobieranie danych z repozytorium
+        const { count, rows: borrowings } = await BorrowingRepository.getPaginatedBorrowings(limit, offset);
+
+        const totalPages = Math.ceil(count / limit); // Oblicz całkowitą liczbę stron
+
         res.render('pages/borrowing/list', {
-            borrowings: borrowings,
-            navLocation: 'borrowings'
+            borrowings: borrowings, // Wypożyczenia dla bieżącej strony
+            currentPage: page, // Numer aktualnej strony
+            totalPages: totalPages, // Całkowita liczba stron
+            navLocation: 'borrowings' // Aktywna sekcja w nawigacji
         });
     } catch (error) {
         res.status(500).send('Błąd serwera: ' + error.message);

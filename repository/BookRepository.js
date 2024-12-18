@@ -6,6 +6,17 @@ exports.getAllBooks = () => {
     return Book.findAll();
 };
 
+exports.getPaginatedBooks = async (limit, offset) => {
+    try {
+        return await Book.findAndCountAll({
+            limit: limit,
+            offset: offset,
+        });
+    } catch (error) {
+        throw new Error('Błąd pobierania książek: ' + error.message);
+    }
+};
+
 exports.getBookById = (bookId) => {
     return Book.findByPk(bookId, {
         include: [{

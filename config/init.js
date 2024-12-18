@@ -2,12 +2,13 @@ const sequelize = require('./sequelize');
 const Book = require('../model/Book');
 const Borrowing = require('../model/Borrowing');
 const Reader = require('../model/Reader');
+const User = require('../model/User');
 
 module.exports = () => {
     Book.hasMany(Borrowing, {
         as: 'borrowing',
         foreignKey: { name: 'id_book', allowNull: false },
-        onDelete: 'CASCADE' // Usuwaj wypożyczenia, jeśli książka zostanie usunięta
+        onDelete: 'CASCADE'
     });
 
     Borrowing.belongsTo(Book, {
@@ -19,7 +20,7 @@ module.exports = () => {
     Reader.hasMany(Borrowing, {
         as: 'borrowing',
         foreignKey: { name: 'id_reader', allowNull: false },
-        onDelete: 'CASCADE' // Usuwaj wypożyczenia, jeśli czytelnik zostanie usunięty
+        onDelete: 'CASCADE'
     });
 
     Borrowing.belongsTo(Reader, {
@@ -57,6 +58,12 @@ module.exports = () => {
                 { borrow_date: '2024-11-10', return_date: '2024-11-25', id_reader: 3, id_book: 3 },
                 { borrow_date: '2024-11-12', return_date: '2024-11-22', id_reader: 4, id_book: 4 },
                 { borrow_date: '2024-11-15', return_date: null, id_reader: 5, id_book: 5 }
+            ]);
+        })
+        .then(() => {
+            return User.bulkCreate([
+                { username: 'admin', email: 'admin@example.com', password: 'hashedpassword' },
+                { username: 'user1', email: 'user1@example.com', password: 'hashedpassword' }
             ]);
         })
         .then(() => {

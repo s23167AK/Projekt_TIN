@@ -2,13 +2,19 @@ const Borrowing = require('../model/Borrowing');
 const Reader = require('../model/Reader');
 const Book = require('../model/Book');
 
-exports.getAllBorrowings = async () => {
-    return Borrowing.findAll({
-        include: [
-            { model: Reader, as: 'reader' },
-            { model: Book, as: 'book' }
-        ]
-    });
+exports.getPaginatedBorrowings = async (limit, offset) => {
+    try {
+        return await Borrowing.findAndCountAll({
+            include: [
+                { model: Reader, as: 'reader' },
+                { model: Book, as: 'book' }
+            ],
+            limit: limit,
+            offset: offset,
+        });
+    } catch (error) {
+        throw new Error('Błąd pobierania wypożyczeń: ' + error.message);
+    }
 };
 
 exports.getBorrowingById = (borrowingId) => {
