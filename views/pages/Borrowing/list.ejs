@@ -30,6 +30,23 @@
         <% } %>
         </tbody>
     </table>
+    <% if (totalPages > 1) { %>
+        <nav class="pagination">
+            <% if (currentPage > 1) { %>
+                <a href="/borrowings?page=<%= currentPage - 1 %>" class="prev-button">Poprzednia</a>
+            <% } %>
+
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="/borrowings?page=<%= i %>" class="page-button <%= i === currentPage ? 'active' : '' %>">
+                    <%= i %>
+                </a>
+            <% } %>
+
+            <% if (currentPage < totalPages) { %>
+                <a href="/borrowings?page=<%= currentPage + 1 %>" class="next-button">Następna</a>
+            <% } %>
+        </nav>
+    <% } %>
     <p><a href="/borrowings/add" class="submit-button">Dodaj nowe wypożyczenie</a></p>
 </main>
 
