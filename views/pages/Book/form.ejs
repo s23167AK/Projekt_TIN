@@ -22,7 +22,7 @@
         </span>
 
         <label for="genre">Gatunek:</label>
-        <select id="genre" name="genre" required class="<%= validationErrors && validationErrors.find(err => err.path === 'genre') ? 'error-input' : '' %>">
+        <select id="genre" name="genre" required>
             <option value="">-- Wybierz gatunek --</option>
             <% genres.forEach(genre => { %>
                 <option value="<%= genre %>" <%= book.genre === genre ? 'selected' : '' %>><%= genre %></option>
@@ -32,18 +32,10 @@
             <%= validationErrors && validationErrors.find(err => err.path === 'genre') ? 'Pole \'Gatunek\' jest wymagane' : '' %>
         </span>
 
-
-
         <label for="description">Opis:</label>
         <textarea id="description" name="description" placeholder="Dodaj opis książki" required><%= book.description || '' %></textarea>
         <span id="errorDescription" class="error-text">
             <%= validationErrors && validationErrors.find(err => err.path === 'description') ? validationErrors.find(err => err.path === 'description').message : '' %>
-        </span>
-
-        <span id="errorSummary" class="errorform-text">
-            <% if (validationErrors && validationErrors.length > 0) { %>
-                Formularz zawiera błędy. Popraw wprowadzone dane.
-            <% } %>
         </span>
 
         <div class="action-buttons">
@@ -53,7 +45,3 @@
     </form>
 </main>
 <%- include('../../partials/footer.ejs') %>
-
-
-
-

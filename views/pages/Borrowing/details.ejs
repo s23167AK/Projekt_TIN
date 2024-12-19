@@ -4,19 +4,19 @@
     <table class="borrowing-info-table">
         <tr>
             <th>Imię i Nazwisko</th>
-            <td><%= borrowing.reader.first_name + " " + borrowing.reader.last_name %></td>
+            <td><%= borrowing.reader_first_name + " " + borrowing.reader_last_name %></td>
         </tr>
         <tr>
             <th>Tytuł Książki</th>
-            <td><%= borrowing.book.title %></td>
+            <td><%= borrowing.book_title %></td>
         </tr>
         <tr>
             <th>Data Wypożyczenia</th>
-            <td><%= borrowing.borrow_date %></td>
+            <td><%= new Date(borrowing.borrow_date).toLocaleDateString() %></td>
         </tr>
         <tr>
             <th>Data Zwrotu</th>
-            <td><%= borrowing.return_date || 'Brak' %></td>
+            <td><%= borrowing.return_date ? new Date(borrowing.return_date).toLocaleDateString() : 'Brak' %></td>
         </tr>
     </table>
 
