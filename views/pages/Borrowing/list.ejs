@@ -17,10 +17,10 @@
         <tbody>
         <% for (let borrow of borrowings) { %>
             <tr>
-                <td><%= borrow.reader.first_name + " " + borrow.reader.last_name %></td>
-                <td><%= borrow.book.title %></td>
-                <td><%= borrow.borrow_date %></td>
-                <td><%= borrow.return_date || 'Brak' %></td>
+                <td><%= borrow.reader_first_name + " " + borrow.reader_last_name %></td>
+                <td><%= borrow.book_title %></td>
+                <td><%= new Date(borrow.borrow_date).toLocaleDateString() %></td>
+                <td><%= borrow.return_date ? new Date(borrow.return_date).toLocaleDateString() : 'Brak' %></td>
                 <td>
                     <a href="/borrowings/details/<%= borrow.id_borrow %>" class="details-button">Szczegóły</a>
                     <form action="/borrowings/delete/<%= borrow.id_borrow %>" method="POST" style="display: inline;">
@@ -31,23 +31,6 @@
         <% } %>
         </tbody>
     </table>
-    <% if (totalPages > 1) { %>
-        <nav class="pagination">
-            <% if (currentPage > 1) { %>
-                <a href="/borrowings?page=<%= currentPage - 1 %>" class="prev-button">Poprzednia</a>
-            <% } %>
-
-            <% for (let i = 1; i <= totalPages; i++) { %>
-                <a href="/borrowings?page=<%= i %>" class="page-button <%= i === currentPage ? 'active' : '' %>">
-                    <%= i %>
-                </a>
-            <% } %>
-
-            <% if (currentPage < totalPages) { %>
-                <a href="/borrowings?page=<%= currentPage + 1 %>" class="next-button">Następna</a>
-            <% } %>
-        </nav>
-    <% } %>
     <p><a href="/borrowings/add" class="submit-button">Dodaj nowe wypożyczenie</a></p>
 </main>
 
