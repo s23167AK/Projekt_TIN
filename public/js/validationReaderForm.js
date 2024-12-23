@@ -7,9 +7,9 @@ function validateForm() {
     const digitsPattern = /\d/;
     const phonePattern = /^[0-9]{9}$/;
 
-    const firstName = document.getElementById("firstName").value.trim();
+    const firstName = document.getElementById("first_name").value.trim();
     const errorFirstName = document.getElementById("errorFirstName");
-    const lastName = document.getElementById("lastName").value.trim();
+    const lastName = document.getElementById("last_name").value.trim();
     const errorLastName = document.getElementById("errorLastName");
     const email = document.getElementById("email").value.trim();
     const errorEmail = document.getElementById("errorEmail");

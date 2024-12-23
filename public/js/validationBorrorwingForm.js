@@ -14,10 +14,10 @@ function validateForm() {
     const errorBook = document.getElementById("errorBook");
     const reader = document.getElementById("reader").value.trim();
     const errorReader = document.getElementById("errorReader");
-    const borrowDate = document.getElementById("borrow-date").value.trim();
-    const errorBorrowDate = document.getElementById("errorBorrowData");
-    const returnDate = document.getElementById("return-date").value.trim();
-    const errorReturnDate = document.getElementById("errorReturnData");
+    const borrowDate = document.getElementById("borrow_date").value.trim();
+    const errorBorrowDate = document.getElementById("errorBorrowDate");
+    const returnDate = document.getElementById("return_date").value.trim();
+    const errorReturnDate = document.getElementById("errorReturnDate");
 
     errorBook.textContent = "";
     errorReader.textContent = "";
@@ -71,9 +71,7 @@ function validateForm() {
             isValid = false;
         }
     }
-    if (!isValid) {
-        event.preventDefault(); // Zatrzymuje wysyłanie formularza
-    }
+
     document.getElementById("errorSummary").innerHTML = errorSummary.replace(/\n/g, "<br>");
 
     return isValid;
