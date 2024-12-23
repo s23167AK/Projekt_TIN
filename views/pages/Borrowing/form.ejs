@@ -1,7 +1,8 @@
 <%- include('../../partials/header.ejs', { activePage: 'borrowings' }) %>
 <main>
     <h2><%= pageTitle %></h2>
-    <form class="borrowing-form" action="<%= formAction %>" method="POST">
+<!--    <script src="/js/validationBorrorwingForm.js"></script>-->
+    <form class="borrowing-form" action="<%= formAction %>" method="POST" onsubmit="return validateForm();" novalidate>
 
         <!-- Wybór czytelnika -->
         <label for="reader">Czytelnik:</label>
@@ -42,13 +43,13 @@
         </span>
 
         <!-- Podsumowanie błędów -->
-        <span id="errorsSummary" class="errorform-text">
+        <span id="errorSummary" class="errorform-text">
             <% if (validationErrors && validationErrors.length > 0) { %>
                 Formularz zawiera błędy. Popraw wprowadzone dane.
             <% } %>
         </span>
 
-        <!-- Przyciski akcji -->
+
         <div class="action-buttons">
             <button type="submit" class="submit-button"><%= btnLabel %></button>
             <a href="/borrowings" class="cancel-button">Anuluj</a>

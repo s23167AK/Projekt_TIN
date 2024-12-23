@@ -1,150 +1,3 @@
-// const BookRepository = require('../repository/BookRepository');
-//
-// exports.getAllBooks = async (req, res) => {
-//     try {
-//         const books = await BookRepository.getAllBooks();
-//         res.render('pages/book/list', {
-//             books: books,
-//             navLocation: 'books'
-//         });
-//     } catch (error) {
-//         res.status(500).send('Błąd serwera: ' + error.message);
-//     }
-// };
-// exports.getAllBooks = async (req, res) => {
-//     try {
-//         const limit = 3;
-//         const page = parseInt(req.query.page) || 1;
-//         const offset = (page - 1) * limit;
-//
-//         const { count, rows: books } = await BookRepository.getPaginatedBooks(limit, offset);
-//
-//         const totalPages = Math.ceil(count / limit);
-//
-//         res.render('pages/book/list', {
-//             books: books,
-//             currentPage: page,
-//             totalPages: totalPages,
-//             navLocation: 'books'
-//         });
-//     } catch (error) {
-//         res.status(500).send('Błąd serwera: ' + error.message);
-//     }
-// };
-//
-// exports.showBookDetails = async (req, res) => {
-//     try {
-//         const book = await BookRepository.getBookById(req.params.id);
-//         if (!book) {
-//             return res.status(404).send('Nie znaleziono książki');
-//         }
-//         res.render('pages/book/details', {
-//             book: book,
-//             navLocation: 'books'
-//         });
-//     } catch (error) {
-//         res.status(500).send('Błąd serwera: ' + error.message);
-//     }
-// };
-//
-// exports.showCreateForm = (req, res) => {
-//     const genres = ['Powieść', 'Dramat', 'Fantasy', 'Historyczna', 'Sci-Fi', 'Przygodowa']; // Lista gatunków
-//
-//     res.render('pages/book/form', {
-//         book: {},
-//         pageTitle: 'Dodaj Nową Książkę',
-//         formMode: 'createNew',
-//         btnLabel: 'Dodaj Książkę',
-//         formAction: '/books/add',
-//         navLocation: 'books',
-//         genres: genres,
-//         validationErrors: []
-//     });
-// };
-//
-//
-// exports.createBook = async (req, res) => {
-//     const bookData = { ...req.body };
-//
-//     try {
-//         await BookRepository.createBook(bookData);
-//         res.redirect('/books');
-//     } catch (error) {
-//         const genres = ['Powieść', 'Dramat', 'Fantasy', 'Historyczna', 'Sci-Fi', 'Przygodowa']; // Lista gatunków
-//
-//         res.render('pages/book/form', {
-//             book: bookData,
-//             pageTitle: 'Dodaj Nową Książkę',
-//             formMode: 'createNew',
-//             btnLabel: 'Dodaj Książkę',
-//             formAction: '/books/add',
-//             navLocation: 'books',
-//             genres: genres,
-//             validationErrors: error.errors || []
-//         });
-//     }
-// };
-//
-//
-//
-// exports.showEditForm = async (req, res) => {
-//     try {
-//         const book = await BookRepository.getBookById(req.params.id);
-//         if (!book) {
-//             return res.status(404).send('Nie znaleziono książki');
-//         }
-//
-//         const genres = ['Powieść', 'Dramat', 'Fantasy', 'Historyczna', 'Sci-Fi', 'Przygodowa']; // Lista gatunków
-//         res.render('pages/book/edit', {
-//             book: book,
-//             pageTitle: 'Edytuj Książkę',
-//             formMode: 'edit',
-//             btnLabel: 'Zapisz Zmiany',
-//             formAction: `/books/edit/${req.params.id}`,
-//             navLocation: 'books',
-//             genres: genres,
-//             validationErrors: []
-//         });
-//     } catch (error) {
-//         res.status(500).send('Błąd serwera: ' + error.message);
-//     }
-// };
-//
-// exports.updateBook = async (req, res) => {
-//     const bookId = req.params.id;
-//     const bookData = { ...req.body };
-//
-//     try {
-//         await BookRepository.updateBook(bookId, bookData);
-//         res.redirect('/books');
-//     } catch (error) {
-//         const book = await BookRepository.getBookById(bookId);
-//         const genres = ['Powieść', 'Dramat', 'Fantasy', 'Historyczna', 'Sci-Fi', 'Przygodowa'];
-//
-//         res.render('pages/book/edit', {
-//             book: bookData,
-//             pageTitle: 'Edytuj Książkę',
-//             formMode: 'edit',
-//             btnLabel: 'Zapisz zmiany',
-//             formAction: `/books/edit/${bookId}`,
-//             navLocation: 'books',
-//             genres: genres,
-//             validationErrors: error.errors || []
-//         });
-//     }
-// };
-//
-//
-// exports.deleteBook = async (req, res) => {
-//     const bookId = req.params.id;
-//
-//     try {
-//         await BookRepository.deleteBook(bookId); // Wywołanie metody usuwania w repozytorium
-//         res.redirect('/books'); // Powrót na listę książek po usunięciu
-//     } catch (error) {
-//         res.status(500).send('Błąd serwera: ' + error.message);
-//     }
-// };
 
 // Pobierz wszystkie książki
 exports.getAllBooks = async (req, res) => {
@@ -187,25 +40,34 @@ exports.showCreateForm = (req, res) => {
     });
 };
 exports.createBook = async (req, res) => {
-    const bookData = { ...req.body }; // Dane z formularza
+    const bookData = { ...req.body }; // Dane przesłane z formularza
     const genres = ['Powieść', 'Dramat', 'Fantasy', 'Historyczna', 'Sci-Fi', 'Przygodowa']; // Lista gatunków
 
-    try {
-        // Wstawienie danych do bazy
-        await req.db.query(
-            'INSERT INTO book (title, author, publication_year, genre, description) VALUES (?, ?, ?, ?, ?)',
-            [
-                bookData.title,
-                bookData.author,
-                bookData.publication_year,
-                bookData.genre,
-                bookData.description,
-            ]
-        );
-        // Przekierowanie na listę książek po pomyślnym dodaniu
-        res.redirect('/books');
-    } catch (error) {
-        res.render('pages/book/form', {
+    const validationErrors = [];
+
+    if (!bookData.title || bookData.title.trim().length < 2) {
+        validationErrors.push({ path: 'title', message: 'Tytuł musi mieć co najmniej 2 znaki.' });
+    }
+
+    if (!bookData.author || bookData.author.trim().length < 2) {
+        validationErrors.push({ path: 'author', message: 'Autor musi mieć co najmniej 2 znaki.' });
+    }
+
+    const currentYear = new Date().getFullYear();
+    if (!bookData.publication_year || bookData.publication_year < 1000 || bookData.publication_year > currentYear) {
+        validationErrors.push({ path: 'publication_year', message: `Rok publikacji musi być pomiędzy 1000 a ${currentYear}.` });
+    }
+
+    if (!genres.includes(bookData.genre)) {
+        validationErrors.push({ path: 'genre', message: 'Nieprawidłowy gatunek książki.' });
+    }
+
+    if (!bookData.description || bookData.description.trim().length < 10) {
+        validationErrors.push({ path: 'description', message: 'Opis musi zawierać co najmniej 10 znaków.' });
+    }
+
+    if (validationErrors.length > 0) {
+        return res.render('pages/book/form', {
             book: bookData,
             pageTitle: 'Dodaj Nową Książkę',
             formMode: 'createNew',
@@ -213,8 +75,17 @@ exports.createBook = async (req, res) => {
             formAction: '/books/add',
             navLocation: 'books',
             genres: genres,
-            validationErrors: [{ path: 'database', message: 'Nie udało się zapisać książki. Sprawdź dane.' }], // Przykładowy komunikat
+            validationErrors: validationErrors,
         });
+    }
+    try {
+        await req.db.query(
+            'INSERT INTO book (title, author, publication_year, genre, description) VALUES (?, ?, ?, ?, ?)',
+            [bookData.title, bookData.author, bookData.publication_year, bookData.genre, bookData.description]
+        );
+        res.redirect('/books');
+    } catch (error) {
+        res.status(500).send('Błąd serwera: ' + error.message);
     }
 };
 
@@ -248,11 +119,54 @@ exports.showEditForm = async (req, res) => {
 };
 
 exports.updateBook = async (req, res) => {
-    const bookId = req.params.id;
-    const bookData = { ...req.body };
+    const bookId = req.params.id; // ID książki z parametru URL
+    const bookData = { ...req.body }; // Dane przesłane z formularza
+    const genres = ['Powieść', 'Dramat', 'Fantasy', 'Historyczna', 'Sci-Fi', 'Przygodowa']; // Lista gatunków
 
+    const validationErrors = [];
+
+    // 🛡️ **1. Walidacja Tytułu**
+    if (!bookData.title || bookData.title.trim().length < 2) {
+        validationErrors.push({ path: 'title', message: 'Tytuł musi mieć co najmniej 2 znaki.' });
+    }
+
+    // 🛡️ **2. Walidacja Autora**
+    if (!bookData.author || bookData.author.trim().length < 2) {
+        validationErrors.push({ path: 'author', message: 'Autor musi mieć co najmniej 2 znaki.' });
+    }
+
+    // 🛡️ **3. Walidacja Roku Publikacji**
+    const currentYear = new Date().getFullYear();
+    if (!bookData.publication_year || bookData.publication_year < 1000 || bookData.publication_year > currentYear) {
+        validationErrors.push({ path: 'publication_year', message: `Rok publikacji musi być pomiędzy 1000 a ${currentYear}.` });
+    }
+
+    // 🛡️ **4. Walidacja Gatunku**
+    if (!genres.includes(bookData.genre)) {
+        validationErrors.push({ path: 'genre', message: 'Nieprawidłowy gatunek książki.' });
+    }
+
+    // 🛡️ **5. Walidacja Opisu**
+    if (!bookData.description || bookData.description.trim().length < 10) {
+        validationErrors.push({ path: 'description', message: 'Opis musi zawierać co najmniej 10 znaków.' });
+    }
+
+    // 🛑 **Jeśli występują błędy walidacji, zwróć formularz edycji z błędami**
+    if (validationErrors.length > 0) {
+        return res.render('pages/book/edit', {
+            book: { ...bookData, id_book: bookId }, // Zachowanie danych użytkownika
+            pageTitle: 'Edytuj Książkę',
+            formMode: 'edit',
+            btnLabel: 'Zapisz Zmiany',
+            formAction: `/books/edit/${bookId}`,
+            navLocation: 'books',
+            genres: genres,
+            validationErrors: validationErrors,
+        });
+    }
+
+    // ✅ **Jeśli walidacja się powiodła, wykonaj aktualizację w bazie**
     try {
-        // Aktualizacja danych książki w bazie
         await req.db.query(
             'UPDATE book SET title = ?, author = ?, publication_year = ?, genre = ?, description = ? WHERE id_book = ?',
             [
@@ -265,41 +179,17 @@ exports.updateBook = async (req, res) => {
             ]
         );
 
-        // Przekierowanie po pomyślnej aktualizacji
-        res.redirect('/books');
+        res.redirect('/books'); // Przekierowanie po pomyślnej aktualizacji
     } catch (error) {
-        try {
-            // Pobierz książkę ponownie, jeśli aktualizacja się nie uda
-            const [book] = await req.db.query('SELECT * FROM book WHERE id_book = ?', [bookId]);
-
-            if (!book.length) {
-                return res.status(404).send('Nie znaleziono książki do aktualizacji');
-            }
-
-            // Lista gatunków
-            const genres = ['Powieść', 'Dramat', 'Fantasy', 'Historyczna', 'Sci-Fi', 'Przygodowa'];
-
-            // Renderowanie widoku edycji z błędami walidacji
-            res.render('pages/book/edit', {
-                book: { ...book[0], ...bookData }, // Aktualne dane książki i dane z formularza
-                pageTitle: 'Edytuj Książkę',
-                formMode: 'edit',
-                btnLabel: 'Zapisz zmiany',
-                formAction: `/books/edit/${bookId}`,
-                navLocation: 'books',
-                genres: genres,
-                validationErrors: [{ message: 'Błąd aktualizacji danych książki' }], // Przykładowe błędy walidacji
-            });
-        } catch (innerError) {
-            res.status(500).send('Błąd serwera: ' + innerError.message);
-        }
+        // 🛑 **Obsługa błędu bazy danych**
+        return res.status(500).send('Błąd serwera podczas aktualizacji książki: ' + error.message);
     }
 };
+
 
 // Usuń książkę
 exports.deleteBook = async (req, res) => {
     const bookId = req.params.id;
-
     try {
         await req.db.query('DELETE FROM book WHERE id_book = ?', [bookId]);
         res.redirect('/books');

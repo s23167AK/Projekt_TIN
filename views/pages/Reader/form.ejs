@@ -1,7 +1,8 @@
 <%- include('../../partials/header.ejs', { activePage: 'readers' }) %>
 <main>
     <h2><%= pageTitle %></h2>
-    <form class="reader-form" action="<%= formAction %>" method="POST">
+<!--    <script src="/js/validationReaderForm.js"></script>-->
+    <form class="reader-form" action="<%= formAction %>" method="POST" onsubmit="return validateForm();" novalidate>
         <label for="first_name">Imię:</label>
         <input type="text" id="first_name" name="first_name" value="<%= reader.first_name || '' %>" placeholder="Wpisz imię czytelnika" required>
         <span id="errorFirstName" class="error-text">
@@ -26,7 +27,7 @@
             <%= validationErrors && validationErrors.find(err => err.path === 'phone') ? validationErrors.find(err => err.path === 'phone').message : '' %>
         </span>
 
-        <span id="errorsSummary" class="errorform-text">
+        <span id="errorSummary" class="errorform-text">
             <% if (validationErrors && validationErrors.length > 0) { %>
                 Formularz zawiera błędy. Popraw wprowadzone dane.
             <% } %>
