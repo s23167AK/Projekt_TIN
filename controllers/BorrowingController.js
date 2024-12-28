@@ -1,16 +1,23 @@
+const { validateBorrowingData } = require('../helpers/validation');
+
+// Pomocnicza funkcja do pobrania książek i czytelników
+const fetchBooksAndReaders = async (db) => {
+    const [readers] = await db.query('SELECT * FROM reader');
+    const [books] = await db.query('SELECT * FROM book');
+    return { readers, books };
+};
+
+//pobranie wszystkich wypożyczeń
 exports.getAllBorrowings = async (req, res) => {
     try {
-        const [borrowings] = await req.db.query(
-            `SELECT borrowing.id_borrow, borrowing.borrow_date, borrowing.return_date,
-                    book.title AS book_title, reader.first_name AS reader_first_name, reader.last_name AS reader_last_name
-             FROM borrowing
-             JOIN book ON borrowing.id_book = book.id_book
-             JOIN reader ON borrowing.id_reader = reader.id_reader`
-        );
-        res.render('pages/borrowing/list', {
-            borrowings: borrowings,
-            navLocation: 'borrowings',
-        });
+        const [borrowings] = await req.db.query(`
+            SELECT borrowing.id_borrow, borrowing.borrow_date, borrowing.return_date,
+                   book.title AS book_title, reader.first_name AS reader_first_name, reader.last_name AS reader_last_name
+            FROM borrowing
+                     JOIN book ON borrowing.id_book = book.id_book
+                     JOIN reader ON borrowing.id_reader = reader.id_reader
+        `);
+        res.render('pages/borrowing/list', { borrowings, navLocation: 'borrowings' });
     } catch (error) {
         res.status(500).send('Błąd serwera: ' + error.message);
     }
@@ -18,231 +25,142 @@ exports.getAllBorrowings = async (req, res) => {
 
 exports.showBorrowingDetails = async (req, res) => {
     try {
-        const [borrowing] = await req.db.query(
-            `SELECT borrowing.id_borrow, borrowing.borrow_date, borrowing.return_date,
-                    book.title AS book_title, reader.first_name AS reader_first_name, reader.last_name AS reader_last_name
-             FROM borrowing
-             JOIN book ON borrowing.id_book = book.id_book
-             JOIN reader ON borrowing.id_reader = reader.id_reader
-             WHERE borrowing.id_borrow = ?`,
-            [req.params.id]
-        );
+        const [borrowing] = await req.db.query(`
+            SELECT borrowing.id_borrow, borrowing.borrow_date, borrowing.return_date,
+                   book.title AS book_title, reader.first_name AS reader_first_name, reader.last_name AS reader_last_name
+            FROM borrowing
+                     JOIN book ON borrowing.id_book = book.id_book
+                     JOIN reader ON borrowing.id_reader = reader.id_reader
+            WHERE borrowing.id_borrow = ?
+        `, [req.params.id]);
 
-        if (!borrowing.length) {
-            return res.status(404).send('Nie znaleziono wypożyczenia');
-        }
+        if (!borrowing.length) return res.status(404).send('Nie znaleziono wypożyczenia');
 
-        res.render('pages/borrowing/details', {
-            borrowing: borrowing[0],
-            navLocation: 'borrowings',
-        });
+        res.render('pages/borrowing/details',
+            {
+                borrowing: borrowing[0],
+                navLocation: 'borrowings'
+            });
     } catch (error) {
         res.status(500).send('Błąd serwera: ' + error.message);
     }
 };
 
+// Formularz dodawania wypożyczenia
 exports.showCreateForm = async (req, res) => {
-    try {
-        const [readers] = await req.db.query('SELECT * FROM reader');
-        const [books] = await req.db.query('SELECT * FROM book');
-
-        res.render('pages/borrowing/form', {
-            borrowing: {},
-            pageTitle: 'Dodaj Nowe Wypożyczenie',
-            formMode: 'createNew',
-            btnLabel: 'Dodaj Wypożyczenie',
-            formAction: '/borrowings/add',
-            navLocation: 'borrowings',
-            readers: readers,
-            books: books,
-            validationErrors: [],
-        });
-    } catch (error) {
-        res.status(500).send('Błąd serwera: ' + error.message);
-    }
+    const { readers, books } = await fetchBooksAndReaders(req.db);
+    res.render('pages/borrowing/form', {
+        borrowing: {},
+        pageTitle: 'Dodaj Nowe Wypożyczenie',
+        formMode: 'createNew',
+        btnLabel: 'Dodaj Wypożyczenie',
+        formAction: '/borrowings/add',
+        navLocation: 'borrowings',
+        readers,
+        books,
+        validationErrors: []
+    });
 };
 
+// Tworzenie nowego wypożyczenia
 exports.createBorrowing = async (req, res) => {
-    const borrowingData = { ...req.body };
-
-    const validationErrors = [];
-
-    if (!borrowingData.id_reader || isNaN(borrowingData.id_reader)) {
-        validationErrors.push({ path: 'id_reader', message: 'Musisz wybrać poprawnego czytelnika.' });
-    }
-
-    if (!borrowingData.id_book || isNaN(borrowingData.id_book)) {
-        validationErrors.push({ path: 'id_book', message: 'Musisz wybrać poprawną książkę.' });
-    }
-
-    const borrowDate = new Date(borrowingData.borrow_date);
-    const today = new Date();
-    const todayString = today.toISOString().split('T')[0];
-
-    if (!borrowingData.borrow_date || isNaN(borrowDate.getTime())) {
-        validationErrors.push({ path: 'borrow_date', message: 'Musisz podać poprawną datę wypożyczenia.' });
-    } else if (borrowingData.borrow_date !== todayString) {
-        validationErrors.push({ path: 'borrow_date', message: 'Data wypożyczenia musi być dzisiejsza.' });
-    }
-
-    if (borrowingData.return_date) {
-        const returnDate = new Date(borrowingData.return_date);
-        if (isNaN(returnDate.getTime())) {
-            validationErrors.push({ path: 'return_date', message: 'Musisz podać poprawną datę zwrotu.' });
-        } else if (returnDate <= borrowDate) {
-            validationErrors.push({ path: 'return_date', message: 'Data zwrotu musi być późniejsza niż data wypożyczenia.' });
-        }
-    }
+    const validationErrors = validateBorrowingData(req.body);
+    const { readers, books } = await fetchBooksAndReaders(req.db);
 
     if (validationErrors.length > 0) {
-        const [readers] = await req.db.query('SELECT * FROM reader');
-        const [books] = await req.db.query('SELECT * FROM book');
-
         return res.render('pages/borrowing/form', {
-            borrowing: borrowingData,
+            borrowing: req.body,
             pageTitle: 'Dodaj Nowe Wypożyczenie',
             formMode: 'createNew',
             btnLabel: 'Dodaj Wypożyczenie',
             formAction: '/borrowings/add',
             navLocation: 'borrowings',
-            readers: readers,
-            books: books,
-            validationErrors: validationErrors,
+            readers,
+            books,
+            validationErrors
         });
     }
 
     try {
-        await req.db.query(
-            'INSERT INTO borrowing (id_book, id_reader, borrow_date, return_date) VALUES (?, ?, ?, ?)',
-            [borrowingData.id_book, borrowingData.id_reader, borrowingData.borrow_date, borrowingData.return_date]
+        await req.db.query(`
+            INSERT INTO borrowing (id_book, id_reader, borrow_date, return_date) 
+            VALUES (?, ?, ?, ?)`,
+            [req.body.id_book, req.body.id_reader, req.body.borrow_date, req.body.return_date]
         );
         res.redirect('/borrowings');
     } catch (error) {
-        const [readers] = await req.db.query('SELECT * FROM reader');
-        const [books] = await req.db.query('SELECT * FROM book');
-
-        res.render('pages/borrowing/form', {
-            borrowing: borrowingData,
-            pageTitle: 'Dodaj Nowe Wypożyczenie',
-            formMode: 'createNew',
-            btnLabel: 'Dodaj Wypożyczenie',
-            formAction: '/borrowings/add',
-            navLocation: 'borrowings',
-            readers: readers,
-            books: books,
-            validationErrors: [{ path: 'database', message: 'Błąd bazy danych: ' + error.message }],
-        });
+        res.status(500).send('Błąd serwera: ' + error.message);
     }
 };
+// Funkcja do formatowania daty na format YYYY-MM-DD (dla input type="date")
+const formatDateForInput = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
 
+    // Korekta o strefę czasową
+    const localTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+
+    return localTime.toISOString().split('T')[0]; // YYYY-MM-DD
+};
+
+// Formularz edycji wypożyczenia
 exports.showEditForm = async (req, res) => {
-    try {
-        const [borrowing] = await req.db.query('SELECT * FROM borrowing WHERE id_borrow = ?', [req.params.id]);
-        if (!borrowing.length) {
-            return res.status(404).send('Nie znaleziono wypożyczenia');
-        }
+    const [borrowing] = await req.db.query('SELECT * FROM borrowing WHERE id_borrow = ?', [req.params.id]);
+    if (!borrowing.length) return res.status(404).send('Nie znaleziono wypożyczenia');
 
-        const [readers] = await req.db.query('SELECT * FROM reader');
-        const [books] = await req.db.query('SELECT * FROM book');
+    borrowing[0].borrow_date = formatDateForInput(borrowing[0].borrow_date);
+    borrowing[0].return_date = formatDateForInput(borrowing[0].return_date);
 
-        res.render('pages/borrowing/edit', {
-            borrowing: borrowing[0],
+    const { readers, books } = await fetchBooksAndReaders(req.db);
+
+    res.render('pages/borrowing/form', {
+        borrowing: borrowing[0],
+        pageTitle: 'Edytuj Wypożyczenie',
+        formMode: 'edit',
+        btnLabel: 'Zapisz Zmiany',
+        formAction: `/borrowings/edit/${req.params.id}`,
+        navLocation: 'borrowings',
+        readers,
+        books,
+        validationErrors: []
+    });
+};
+
+// Aktualizacja wypożyczenia
+exports.updateBorrowing = async (req, res) => {
+    const validationErrors = validateBorrowingData(req.body);
+    const { readers, books } = await fetchBooksAndReaders(req.db);
+
+    if (validationErrors.length > 0) {
+        return res.render('pages/borrowing/form', {
+            borrowing: req.body,
             pageTitle: 'Edytuj Wypożyczenie',
             formMode: 'edit',
             btnLabel: 'Zapisz Zmiany',
             formAction: `/borrowings/edit/${req.params.id}`,
             navLocation: 'borrowings',
-            readers: readers,
-            books: books,
-            validationErrors: [],
+            readers,
+            books,
+            validationErrors
         });
+    }
+
+    try {
+        await req.db.query(`
+            UPDATE borrowing SET id_book = ?, id_reader = ?, borrow_date = ?, return_date = ? 
+            WHERE id_borrow = ?`,
+            [req.body.id_book, req.body.id_reader, req.body.borrow_date, req.body.return_date, req.params.id]
+        );
+        res.redirect('/borrowings');
     } catch (error) {
         res.status(500).send('Błąd serwera: ' + error.message);
     }
 };
 
-exports.updateBorrowing = async (req, res) => {
-    const borrowingId = req.params.id;
-    const borrowingData = { ...req.body };
-
-    const validationErrors = [];
-
-    if (!borrowingData.id_reader || isNaN(borrowingData.id_reader)) {
-        validationErrors.push({ path: 'id_reader', message: 'Musisz wybrać poprawnego czytelnika.' });
-    }
-
-    if (!borrowingData.id_book || isNaN(borrowingData.id_book)) {
-        validationErrors.push({ path: 'id_book', message: 'Musisz wybrać poprawną książkę.' });
-    }
-
-    if (!borrowingData.borrow_date) {
-        validationErrors.push({ path: 'borrow_date', message: 'Musisz podać datę wypożyczenia.' });
-    } else {
-        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-        if (!dateRegex.test(borrowingData.borrow_date)) {
-            validationErrors.push({ path: 'borrow_date', message: 'Data wypożyczenia musi być w formacie YYYY-MM-DD.' });
-        }
-    }
-    if (borrowingData.return_date) {
-        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-        if (!dateRegex.test(borrowingData.return_date)) {
-            validationErrors.push({ path: 'return_date', message: 'Data zwrotu musi być w formacie YYYY-MM-DD.' });
-        } else if (new Date(borrowingData.return_date) <= new Date(borrowingData.borrow_date)) {
-            validationErrors.push({
-                path: 'return_date',
-                message: 'Data zwrotu musi być późniejsza niż data wypożyczenia.',
-            });
-        }
-    }
-
-    if (validationErrors.length > 0) {
-        const [readers] = await req.db.query('SELECT * FROM reader');
-        const [books] = await req.db.query('SELECT * FROM book');
-        const [borrowing] = await req.db.query('SELECT * FROM borrowing WHERE id_borrow = ?', [borrowingId]);
-
-        return res.render('pages/borrowing/edit', {
-            borrowing: { ...borrowingData, id_borrow: borrowingId },
-            pageTitle: 'Edytuj Wypożyczenie',
-            formMode: 'edit',
-            btnLabel: 'Zapisz Zmiany',
-            formAction: `/borrowings/edit/${borrowingId}`,
-            navLocation: 'borrowings',
-            readers: readers,
-            books: books,
-            validationErrors: validationErrors,
-        });
-    }
-
-    try {
-        await req.db.query(
-            'UPDATE borrowing SET id_book = ?, id_reader = ?, borrow_date = ?, return_date = ? WHERE id_borrow = ?',
-            [borrowingData.id_book, borrowingData.id_reader, borrowingData.borrow_date, borrowingData.return_date, borrowingId]
-        );
-        res.redirect('/borrowings');
-    } catch (error) {
-        const [readers] = await req.db.query('SELECT * FROM reader');
-        const [books] = await req.db.query('SELECT * FROM book');
-        const [borrowing] = await req.db.query('SELECT * FROM borrowing WHERE id_borrow = ?', [borrowingId]);
-
-        res.render('pages/borrowing/edit', {
-            borrowing: borrowingData,
-            pageTitle: 'Edytuj Wypożyczenie',
-            formMode: 'edit',
-            btnLabel: 'Zapisz Zmiany',
-            formAction: `/borrowings/edit/${borrowingId}`,
-            navLocation: 'borrowings',
-            readers: readers,
-            books: books,
-            validationErrors: [{ path: 'database', message: 'Błąd bazy danych: ' + error.message }],
-        });
-    }
-};
-
-
+// Usuwanie wypożyczenia
 exports.deleteBorrowing = async (req, res) => {
-    const borrowingId = req.params.id;
     try {
-        await req.db.query('DELETE FROM borrowing WHERE id_borrow = ?', [borrowingId]);
+        await req.db.query('DELETE FROM borrowing WHERE id_borrow = ?', [req.params.id]);
         res.redirect('/borrowings');
     } catch (error) {
         res.status(500).send('Błąd serwera: ' + error.message);
