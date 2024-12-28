@@ -16,8 +16,17 @@ exports.showReaderDetails = async (req, res) => {
         if (!reader.length) {
             return res.status(404).send('Nie znaleziono czytelnika');
         }
+        const [borrowings] = await req.db.query(`
+            SELECT borrowing.id_borrow, borrowing.borrow_date, borrowing.return_date,
+                   book.title AS book_title
+            FROM borrowing
+            JOIN book ON borrowing.id_book = book.id_book
+            WHERE borrowing.id_reader = ?
+        `, [req.params.id]);
+
         res.render('pages/reader/details', {
             reader: reader[0],
+            borrowings: borrowings,
             navLocation: 'readers',
         });
     } catch (error) {

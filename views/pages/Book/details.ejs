@@ -28,6 +28,32 @@
         <a href="/books" class="cancel-button">Powrót do listy</a>
         <a href="/books/edit/<%= book.id_book %>" class="edit-button">Edytuj Książkę</a>
     </div>
+
+    <h2>Szczegóły Wypożyczeń</h2>
+    <% if (borrowings.length > 0) { %>
+        <table class="table-list">
+            <thead>
+            <tr>
+                <th>Imię i Nazwisko</th>
+                <th>Data Wypożyczenia</th>
+                <th>Data Zwrotu</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% for (let e of borrowings) { %>
+                <tr>
+                    <td><%= e.reader_first_name %> <%= e.reader_last_name %></td>
+                    <td><%= new Date(e.borrow_date).toLocaleDateString('pl-PL') %></td>
+                    <td>
+                        <%= e.return_date ? new Date(e.return_date).toLocaleDateString('pl-PL') : 'Brak' %>
+                    </td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>Brak wypożyczeń dla tej książki.</p>
+    <% } %>
 </main>
 <%- include('../../partials/footer.ejs') %>
 

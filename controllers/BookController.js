@@ -17,8 +17,17 @@ exports.showBookDetails = async (req, res) => {
         if (!book.length) {
             return res.status(404).send('Nie znaleziono książki');
         }
+        const [borrowings] = await req.db.query(`
+            SELECT borrowing.id_borrow, borrowing.borrow_date, borrowing.return_date,
+                   reader.first_name AS reader_first_name, reader.last_name AS reader_last_name
+            FROM borrowing
+            JOIN reader ON borrowing.id_reader = reader.id_reader
+            WHERE borrowing.id_book = ?
+        `, [req.params.id]);
+
         res.render('pages/book/details', {
             book: book[0],
+            borrowings: borrowings,
             navLocation: 'books',
         });
     } catch (error) {
@@ -101,6 +110,7 @@ exports.showEditForm = async (req, res) => {
 
         // Lista gatunków
         const genres = ['Powieść', 'Dramat', 'Fantasy', 'Historyczna', 'Sci-Fi', 'Przygodowa'];
+
 
         // Renderowanie widoku edycji
         res.render('pages/book/edit', {

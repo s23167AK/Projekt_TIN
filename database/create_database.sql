@@ -9,7 +9,9 @@ CREATE TABLE IF NOT EXISTS book(
     author VARCHAR(255) NOT NULL,
     publication_year INT NOT NULL,
     genre VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL
+    description TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     );
 
 CREATE TABLE IF NOT EXISTS reader (
@@ -17,7 +19,9 @@ CREATE TABLE IF NOT EXISTS reader (
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR (100) NOT NULL UNIQUE,
-    phone VARCHAR(15) NOT NULL
+    phone VARCHAR(15) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     );
 CREATE TABLE IF NOT EXISTS borrowing (
     id_borrow INT AUTO_INCREMENT PRIMARY KEY,
@@ -26,23 +30,24 @@ CREATE TABLE IF NOT EXISTS borrowing (
     id_reader INT NOT NULL,
     id_book INT NOT NULL,
     FOREIGN KEY (id_reader) REFERENCES reader(id_reader) ON DELETE CASCADE,
-    FOREIGN KEY (id_book) REFERENCES book(id_book) ON DELETE CASCADE
-
+    FOREIGN KEY (id_book) REFERENCES book(id_book) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 INSERT INTO book (title, author, publication_year, genre, description)
-VALUES ('Lalka', 'Bolesław Prus', 1890, 'Powieść', 5, 'Opowieść o losach Stanisława Wokulskiego.');
+VALUES ('Lalka', 'Bolesław Prus', 1890, 'Powieść', 'Opowieść o losach Stanisława Wokulskiego.');
 
 INSERT INTO book (title, author, publication_year, genre, description)
-VALUES ('W pustyni i w puszczy', 'Henryk Sienkiewicz', 1911, 'Powieść przygodowa', 3, 'Historia dzieci porwanych w Afryce.');
+VALUES ('W pustyni i w puszczy', 'Henryk Sienkiewicz', 1911, 'Powieść przygodowa', 'Historia dzieci porwanych w Afryce.');
 
 INSERT INTO book (title, author, publication_year, genre, description)
-VALUES ('Pan Tadeusz', 'Adam Mickiewicz', 1834, 'Epopeja', 4, 'Ostatni zajazd na Litwie.');
+VALUES ('Pan Tadeusz', 'Adam Mickiewicz', 1834, 'Epopeja', 'Ostatni zajazd na Litwie.');
 
 INSERT INTO book (title, author, publication_year, genre, description)
-VALUES ('Quo Vadis', 'Henryk Sienkiewicz', 1896, 'Powieść historyczna', 6, 'Miłość w czasach prześladowań chrześcijan.');
+VALUES ('Quo Vadis', 'Henryk Sienkiewicz', 1896, 'Powieść historyczna', 'Miłość w czasach prześladowań chrześcijan.');
 
 INSERT INTO book (title, author, publication_year, genre, description)
-VALUES ('Dziady', 'Adam Mickiewicz', 1823, 'Dramat romantyczny', 2, 'Dramat poświęcony duchowości i historii Polski.');
+VALUES ('Dziady', 'Adam Mickiewicz', 1823, 'Dramat romantyczny', 'Dramat poświęcony duchowości i historii Polski.');
 
 INSERT INTO reader (first_name, last_name, email, phone)
 VALUES ('Jan', 'Kowalski', 'jan.kowalski@gmail.com', '123456789');
