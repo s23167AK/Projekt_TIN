@@ -2,6 +2,7 @@
 <main>
     <h2><%= pageTitle %></h2>
     <script src="/js/validationBorrorwingForm.js"></script>
+
     <form class="borrowing-form" action="<%= formAction %>" method="POST" onsubmit="return validateForm();" novalidate>
         <label for="reader">Czytelnik:</label>
         <select id="reader" name="id_reader" required class="input-field">
@@ -32,7 +33,7 @@
         <span id="errorBorrowDate" class="error-text">
             <%= validationErrors && validationErrors.find(err => err.path === 'borrow_date') ? validationErrors.find(err => err.path === 'borrow_date').message : '' %>
         </span>
-        <p>Data Wypożyczenia (PL): <%= borrowing.borrow_date_display || 'Brak daty' %></p>
+        <input type="hidden" id="isEdit" value="true">
 
         <!-- Data Zwrotu -->
         <label for="return_date">Data Zwrotu:</label>
@@ -42,10 +43,6 @@
         <span id="errorReturnDate" class="error-text">
             <%= validationErrors && validationErrors.find(err => err.path === 'return_date') ? validationErrors.find(err => err.path === 'return_date').message : '' %>
         </span>
-        <p>Data Zwrotu (PL): <%= borrowing.return_date_display || 'Brak daty' %></p>
-
-
-
 
         <span class="error-text">
             <% if (validationErrors && validationErrors.length > 0) { %>

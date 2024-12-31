@@ -1,3 +1,5 @@
+const { validateReaderData } = require('../helpers/validation');
+
 exports.getAllReaders = async (req, res) => {
     try {
         const [readers] = await req.db.query('SELECT * FROM reader');
@@ -48,26 +50,7 @@ exports.showCreateForm = (req, res) => {
 
 exports.createReader = async (req, res) => {
     const readerData = { ...req.body };
-
-    const validationErrors = [];
-
-    if (!readerData.first_name || readerData.first_name.trim().length < 2) {
-        validationErrors.push({ path: 'first_name', message: 'Imię musi mieć co najmniej 2 znaki.' });
-    }
-
-    if (!readerData.last_name || readerData.last_name.trim().length < 2) {
-        validationErrors.push({ path: 'last_name', message: 'Nazwisko musi mieć co najmniej 2 znaki.' });
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!readerData.email || !emailRegex.test(readerData.email)) {
-        validationErrors.push({ path: 'email', message: 'Podaj poprawny adres e-mail.' });
-    }
-
-    const phoneRegex = /^\d{9}$/;
-    if (!readerData.phone || !phoneRegex.test(readerData.phone)) {
-        validationErrors.push({ path: 'phone', message: 'Numer telefonu musi zawierać dokładnie 9 cyfr.' });
-    }
+    const validationErrors = validateReaderData(readerData);
 
     if (validationErrors.length > 0) {
         return res.render('pages/reader/form', {
@@ -83,20 +66,12 @@ exports.createReader = async (req, res) => {
 
     try {
         await req.db.query(
-            'INSERT INTO reader (first_name, last_name, email) VALUES (?, ?, ?)',
-            [readerData.first_name, readerData.last_name, readerData.email]
+            'INSERT INTO reader (first_name, last_name, email,phone) VALUES (?, ?, ?)',
+            [readerData.first_name, readerData.last_name, readerData.email,readerData.phone]
         );
         res.redirect('/readers');
     } catch (error) {
-        res.render('pages/reader/form', {
-            reader: readerData,
-            pageTitle: 'Dodaj Nowego Czytelnika',
-            formMode: 'createNew',
-            btnLabel: 'Dodaj Czytelnika',
-            formAction: '/readers/add',
-            navLocation: 'readers',
-            validationErrors: [{ path: 'database', message: 'Błąd bazy danych: ' + error.message }],
-        });
+        res.status(500).send('Błąd serwera: ' + error.message);
     }
 };
 
@@ -123,29 +98,8 @@ exports.showEditForm = async (req, res) => {
 exports.updateReader = async (req, res) => {
     const readerId = req.params.id;
     const readerData = { ...req.body };
+    const validationErrors = validateReaderData(readerData);
 
-    const validationErrors = [];
-
-    if (!readerData.first_name || readerData.first_name.trim().length < 2) {
-        validationErrors.push({ path: 'first_name', message: 'Imię musi mieć co najmniej 2 znaki.' });
-    }
-
-    // 🛡️ **2. Walidacja Nazwiska**
-    if (!readerData.last_name || readerData.last_name.trim().length < 2) {
-        validationErrors.push({ path: 'last_name', message: 'Nazwisko musi mieć co najmniej 2 znaki.' });
-    }
-
-    // 🛡️ **3. Walidacja E-maila**
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!readerData.email || !emailRegex.test(readerData.email)) {
-        validationErrors.push({ path: 'email', message: 'Podaj poprawny adres e-mail.' });
-    }
-
-    // 🛡️ **4. Walidacja Numeru Telefonu**
-    const phoneRegex = /^\d{9}$/;
-    if (!readerData.phone || !phoneRegex.test(readerData.phone)) {
-        validationErrors.push({ path: 'phone', message: 'Numer telefonu musi zawierać dokładnie 9 cyfr.' });
-    }
 
     if (validationErrors.length > 0) {
         return res.render('pages/reader/edit', {
@@ -161,21 +115,13 @@ exports.updateReader = async (req, res) => {
 
     try {
         await req.db.query(
-            'UPDATE reader SET first_name = ?, last_name = ?, email = ? WHERE id_reader = ?',
-            [readerData.first_name, readerData.last_name, readerData.email, readerId]
+            'UPDATE reader SET first_name = ?, last_name = ?, email = ?, phone = ? WHERE id_reader = ?',
+            [readerData.first_name, readerData.last_name, readerData.email, readerData.phone, readerId]
         );
         res.redirect('/readers');
 
     } catch (error) {
-        res.render('pages/reader/edit', {
-            reader: readerData,
-            pageTitle: 'Edytuj Czytelnika',
-            formMode: 'edit',
-            btnLabel: 'Zapisz Zmiany',
-            formAction: `/readers/edit/${readerId}`,
-            navLocation: 'readers',
-            validationErrors: [{ path: 'database', message: 'Błąd bazy danych: ' + error.message }],
-        });
+        res.status(500).send('Błąd serwera podczas aktualizacji czytelnika: ' + error.message);
     }
 };
 

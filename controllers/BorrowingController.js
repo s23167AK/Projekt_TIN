@@ -6,6 +6,12 @@ const fetchBooksAndReaders = async (db) => {
     const [books] = await db.query('SELECT * FROM book');
     return { readers, books };
 };
+const formatDateForInput = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const localTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+    return localTime.toISOString().split('T')[0]; // YYYY-MM-DD
+};
 
 //pobranie wszystkich wypożyczeń
 exports.getAllBorrowings = async (req, res) => {
@@ -14,10 +20,13 @@ exports.getAllBorrowings = async (req, res) => {
             SELECT borrowing.id_borrow, borrowing.borrow_date, borrowing.return_date,
                    book.title AS book_title, reader.first_name AS reader_first_name, reader.last_name AS reader_last_name
             FROM borrowing
-                     JOIN book ON borrowing.id_book = book.id_book
-                     JOIN reader ON borrowing.id_reader = reader.id_reader
+            JOIN book ON borrowing.id_book = book.id_book
+            JOIN reader ON borrowing.id_reader = reader.id_reader
         `);
-        res.render('pages/borrowing/list', { borrowings, navLocation: 'borrowings' });
+        res.render('pages/borrowing/list', {
+            borrowings: borrowings,
+            navLocation: 'borrowings'
+        });
     } catch (error) {
         res.status(500).send('Błąd serwera: ' + error.message);
     }
@@ -29,8 +38,8 @@ exports.showBorrowingDetails = async (req, res) => {
             SELECT borrowing.id_borrow, borrowing.borrow_date, borrowing.return_date,
                    book.title AS book_title, reader.first_name AS reader_first_name, reader.last_name AS reader_last_name
             FROM borrowing
-                     JOIN book ON borrowing.id_book = book.id_book
-                     JOIN reader ON borrowing.id_reader = reader.id_reader
+            JOIN book ON borrowing.id_book = book.id_book
+            JOIN reader ON borrowing.id_reader = reader.id_reader
             WHERE borrowing.id_borrow = ?
         `, [req.params.id]);
 
@@ -56,8 +65,8 @@ exports.showCreateForm = async (req, res) => {
         btnLabel: 'Dodaj Wypożyczenie',
         formAction: '/borrowings/add',
         navLocation: 'borrowings',
-        readers,
-        books,
+        readers: readers,
+        books: books,
         validationErrors: []
     });
 };
@@ -75,9 +84,9 @@ exports.createBorrowing = async (req, res) => {
             btnLabel: 'Dodaj Wypożyczenie',
             formAction: '/borrowings/add',
             navLocation: 'borrowings',
-            readers,
-            books,
-            validationErrors
+            readers: readers,
+            books: books,
+            validationErrors: validationErrors
         });
     }
 
@@ -92,16 +101,6 @@ exports.createBorrowing = async (req, res) => {
         res.status(500).send('Błąd serwera: ' + error.message);
     }
 };
-// Funkcja do formatowania daty na format YYYY-MM-DD (dla input type="date")
-const formatDateForInput = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-
-    // Korekta o strefę czasową
-    const localTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-
-    return localTime.toISOString().split('T')[0]; // YYYY-MM-DD
-};
 
 // Formularz edycji wypożyczenia
 exports.showEditForm = async (req, res) => {
@@ -113,22 +112,22 @@ exports.showEditForm = async (req, res) => {
 
     const { readers, books } = await fetchBooksAndReaders(req.db);
 
-    res.render('pages/borrowing/form', {
+    res.render('pages/borrowing/edit', {
         borrowing: borrowing[0],
         pageTitle: 'Edytuj Wypożyczenie',
         formMode: 'edit',
         btnLabel: 'Zapisz Zmiany',
         formAction: `/borrowings/edit/${req.params.id}`,
         navLocation: 'borrowings',
-        readers,
-        books,
+        readers: readers,
+        books: books,
         validationErrors: []
     });
 };
 
 // Aktualizacja wypożyczenia
 exports.updateBorrowing = async (req, res) => {
-    const validationErrors = validateBorrowingData(req.body);
+    const validationErrors = validateBorrowingData(req.body, true);
     const { readers, books } = await fetchBooksAndReaders(req.db);
 
     if (validationErrors.length > 0) {
@@ -139,9 +138,9 @@ exports.updateBorrowing = async (req, res) => {
             btnLabel: 'Zapisz Zmiany',
             formAction: `/borrowings/edit/${req.params.id}`,
             navLocation: 'borrowings',
-            readers,
-            books,
-            validationErrors
+            readers: readers,
+            books: books,
+            validationErrors: validationErrors
         });
     }
 
