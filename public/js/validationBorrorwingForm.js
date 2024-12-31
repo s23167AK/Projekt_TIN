@@ -18,6 +18,7 @@ function validateForm() {
     const errorBorrowDate = document.getElementById("errorBorrowDate");
     const returnDate = document.getElementById("return_date").value.trim();
     const errorReturnDate = document.getElementById("errorReturnDate");
+    const isEdit = document.getElementById("isEdit").value === "true";
 
     errorBook.textContent = "";
     errorReader.textContent = "";
@@ -48,7 +49,8 @@ function validateForm() {
         isValid = false;
     } else {
         const borrow = new Date(borrowDate);
-        if (borrow < currentDate) {
+
+        if (!isEdit && borrow < currentDate) { // Jeśli nie jest to edycja, sprawdzamy datę
             errorBorrowDate.textContent = "Data wypożyczenia nie może być wcześniejsza niż dzisiejsza data.";
             errorSummary += "Błąd w polu Data wypożyczenia.\n";
             isValid = false;
