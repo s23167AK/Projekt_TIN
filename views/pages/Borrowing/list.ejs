@@ -23,6 +23,7 @@
                 <td><%= borrow.return_date ? new Date(borrow.return_date).toLocaleDateString() : 'Brak' %></td>
                 <td>
                     <a href="/borrowings/details/<%= borrow.id_borrow %>" class="details-button">Szczegóły</a>
+                    <a href="/borrowings/edit/<%= borrow.id_borrow %>" class="edit-button">Edytuj</a>
                     <form action="/borrowings/delete/<%= borrow.id_borrow %>" method="POST" style="display: inline;">
                         <button type="submit" class="delete-button">Usuń</button>
                     </form>
@@ -32,6 +33,7 @@
         </tbody>
     </table>
     <p><a href="/borrowings/add" class="submit-button">Dodaj nowe wypożyczenie</a></p>
+    <%- include('../../partials/pagination.ejs') %>
 </main>
 
 <%- include('../../partials/footer.ejs') %>

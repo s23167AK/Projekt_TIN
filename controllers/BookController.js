@@ -1,12 +1,31 @@
 const { validateBookData } = require('../helpers/validation');
 const genres = ['Powieść', 'Dramat', 'Fantasy', 'Historyczna', 'Sci-Fi', 'Przygodowa'];
 
-// Pobierz wszystkie książki
 exports.getAllBooks = async (req, res) => {
     try {
-        const [books] = await req.db.query('SELECT * FROM book');
+        // Domyślne wartości paginacji
+        const page = parseInt(req.query.page) || 1; // Domyślnie strona 1
+        const limit = 3; // Stała liczba rekordów na stronę
+        const offset = (page - 1) * limit;
+
+        // Pobierz książki z limitem i przesunięciem
+        const [books] = await req.db.query(
+            'SELECT * FROM book LIMIT ? OFFSET ?',
+            [limit, offset]
+        );
+
+        // Pobierz całkowitą liczbę rekordów
+        const [countResult] = await req.db.query('SELECT COUNT(*) AS count FROM book');
+        const totalBooks = countResult[0].count;
+        const totalPages = Math.ceil(totalBooks / limit);
+
         res.render('pages/book/list', {
             books: books,
+            currentPage: page,
+            totalPages: totalPages,
+            limit: limit,
+            originalUrl: req.originalUrl,
+            currentLanguage: res.locals.currentLanguage,
             navLocation: 'books'
         });
     } catch (error) {
@@ -31,22 +50,22 @@ exports.showBookDetails = async (req, res) => {
             book: book[0],
             borrowings: borrowings,
             navLocation: 'books',
+            originalUrl: req.originalUrl,
+            currentLanguage: res.locals.currentLanguage
         });
     } catch (error) {
         res.status(500).send('Błąd serwera: ' + error.message);
     }
 };
 exports.showCreateForm = (req, res) => {
-    const genres = ['Powieść', 'Dramat', 'Fantasy', 'Historyczna', 'Sci-Fi', 'Przygodowa']; // Lista gatunków
-
     res.render('pages/book/form', {
         book: {},
         pageTitle: 'Dodaj Nową Książkę',
-        formMode: 'createNew',
-        btnLabel: 'Dodaj Książkę',
         formAction: '/books/add',
         navLocation: 'books',
         genres: genres,
+        originalUrl: req.originalUrl,
+        currentLanguage: res.locals.currentLanguage,
         validationErrors: [],
     });
 };
@@ -63,6 +82,8 @@ exports.createBook = async (req, res) => {
             formAction: '/books/add',
             navLocation: 'books',
             genres: genres,
+            originalUrl: req.originalUrl,
+            currentLanguage: res.locals.currentLanguage,
             validationErrors: validationErrors,
         });
     }
@@ -96,6 +117,8 @@ exports.showEditForm = async (req, res) => {
             formAction: `/books/edit/${req.params.id}`, // Akcja formularza
             navLocation: 'books',
             genres: genres,
+            originalUrl: req.originalUrl,
+            currentLanguage: res.locals.currentLanguage,
             validationErrors: [],
         });
     } catch (error) {
@@ -117,6 +140,8 @@ exports.updateBook = async (req, res) => {
             formAction: `/books/edit/${bookId}`,
             navLocation: 'books',
             genres: genres,
+            originalUrl: req.originalUrl,
+            currentLanguage: res.locals.currentLanguage,
             validationErrors: validationErrors,
         });
     }

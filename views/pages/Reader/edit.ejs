@@ -1,41 +1,41 @@
 <%- include('../../partials/header.ejs', { activePage: 'readers' }) %>
 <main>
-    <h2><%= pageTitle %></h2>
-    <!--    <script src="/js/validationReaderForm.js"></script>-->
-    <form class="reader-form" action="<%= formAction %>" method="POST" onsubmit="return validateForm();" novalidate>
-        <label for="first_name">Imię:</label>
-        <input type="text" id="first_name" name="first_name" value="<%= reader.first_name %>" placeholder="Wpisz imię czytelnika" required class="input-field">
+    <h2><%= __('readers.page_title_edit') %></h2>
+    <script src="/js/validationReaderForm.js"></script>
+    <form class="form" action="<%= formAction %>" method="POST" onsubmit="return validateForm();" novalidate>
+        <label for="first_name"><%= __('readers.first_name') %>:</label>
+        <input type="text" id="first_name" name="first_name" value="<%= reader.first_name %>" placeholder="<%= __('readers.first_name') %>" required class="input-field">
         <span id="errorFirstName" class="error-text">
             <%= validationErrors && validationErrors.find(err => err.path === 'first_name') ? validationErrors.find(err => err.path === 'first_name').message : '' %>
         </span>
 
-        <label for="last_name">Nazwisko:</label>
-        <input type="text" id="last_name" name="last_name" value="<%= reader.last_name %>" placeholder="Wpisz nazwisko czytelnika" required class="input-field">
+        <label for="last_name"><%= __('readers.last_name') %>:</label>
+        <input type="text" id="last_name" name="last_name" value="<%= reader.last_name %>" placeholder="<%= __('readers.last_name') %>" required class="input-field">
         <span id="errorLastName" class="error-text">
             <%= validationErrors && validationErrors.find(err => err.path === 'last_name') ? validationErrors.find(err => err.path === 'last_name').message : '' %>
         </span>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="<%= reader.email %>" placeholder="Wpisz adres email" required class="input-field">
+        <label for="email"><%= __('readers.email') %>:</label>
+        <input type="email" id="email" name="email" value="<%= reader.email %>" placeholder="<%= __('readers.email') %>" required class="input-field">
         <span id="errorEmail" class="error-text">
             <%= validationErrors && validationErrors.find(err => err.path === 'email') ? validationErrors.find(err => err.path === 'email').message : '' %>
         </span>
 
-        <label for="phone">Telefon:</label>
-        <input type="text" id="phone" name="phone" value="<%= reader.phone %>" placeholder="Wpisz numer telefonu (9 cyfr)" pattern="\d{9}" required class="input-field">
+        <label for="phone"><%= __('readers.phone') %>:</label>
+        <input type="text" id="phone" name="phone" value="<%= reader.phone %>" placeholder="<%= __('readers.phone_placeholder') %>" pattern="\d{9}" required class="input-field">
         <span id="errorPhone" class="error-text">
             <%= validationErrors && validationErrors.find(err => err.path === 'phone') ? validationErrors.find(err => err.path === 'phone').message : '' %>
         </span>
 
         <span id="errorSummary" class="errorform-text">
             <% if (validationErrors && validationErrors.length > 0) { %>
-                Formularz zawiera błędy. Popraw wprowadzone dane.
+                <%= __('readers.error_summary') %>
             <% } %>
         </span>
 
         <div class="action-buttons">
-            <button type="submit" class="submit-button">Zapisz Zmiany</button>
-            <a href="/readers/details/<%= reader.id_reader %>" class="cancel-button">Anuluj</a>
+            <button type="submit" class="submit-button"><%= __('readers.submit_button') %></button>
+            <a href="/readers/details/<%= reader.id_reader %>" class="cancel-button"><%= __('readers.cancel_button') %></a>
         </div>
     </form>
 </main>

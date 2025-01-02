@@ -1,36 +1,36 @@
-<%- include('../../partials/header.ejs', { activePage: 'books' }) %>
+<%- include('../../partials/header.ejs') %>
 <main>
-    <h1>Książki</h1>
+    <h1><%= __('books.title') %></h1>
     <table>
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Tytuł</th>
-                <th>Autor</th>
-                <th>Rok Publikacji</th>
-                <th>Gatunek</th>
-                <th>Akcje</th>
-            </tr>
+        <tr>
+            <th><%= __('books.title_column') %></th>
+            <th><%= __('books.author') %></th>
+            <th><%= __('books.publication_year') %></th>
+            <th><%= __('books.genre') %></th>
+            <th><%= __('books.actions') %></th>
+        </tr>
         </thead>
         <tbody>
         <% books.forEach(book => { %>
             <tr>
-                <td><%= book.id_book%></td>
                 <td><%= book.title %></td>
                 <td><%= book.author %></td>
                 <td><%= book.publication_year %></td>
                 <td><%= book.genre %></td>
                 <td>
-                    <a href="/books/details/<%= book.id_book %>" class="details-button">Szczegóły</a>
+                    <a href="/books/details/<%= book.id_book %>" class="details-button"><%= __('books.details') %></a>
+                    <a href="/books/edit/<%= book.id_book %>" class="edit-button"><%= __('books.edit-button') %></a>
                     <form action="/books/delete/<%= book.id_book %>" method="POST" style="display: inline;">
-                        <button type="submit" class="delete-button">Usuń</button>
+                        <button type="submit" class="delete-button"><%= __('books.delete') %></button>
                     </form>
                 </td>
             </tr>
         <% }) %>
         </tbody>
     </table>
-    <a href="/books/add" class="submit-button">Dodaj Nową Książkę</a>
+    <a href="/books/add" class="submit-button"><%= __('books.add_new') %></a>
+    <%- include('../../partials/pagination.ejs') %>
 </main>
 <%- include('../../partials/footer.ejs') %>
 

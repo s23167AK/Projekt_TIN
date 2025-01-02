@@ -1,59 +1,63 @@
-<%- include('../../partials/header.ejs', { activePage: 'books' }) %>
+<%- include('../../partials/header.ejs') %>
 <main>
-    <h2 id="book-title"><%= book.title %></h2>
+    <h1 id="book-title"><%= book.title %></h1>
     <table class="book-info-table">
         <tr>
-            <th>Tytuł</th>
+            <th><%= __('books.title_column') %></th>
             <td id="book-title"><%= book.title %></td>
         </tr>
         <tr>
-            <th>Autor</th>
+            <th><%= __('books.author') %></th>
             <td id="book-author"><%= book.author %></td>
         </tr>
         <tr>
-            <th>Rok Publikacji</th>
+            <th><%= __('books.publication_year') %></th>
             <td id="book-year"><%= book.publication_year %></td>
         </tr>
         <tr>
-            <th>Gatunek</th>
+            <th><%= __('books.genre') %></th>
             <td id="book-genre"><%= book.genre %></td>
         </tr>
         <tr>
-            <th>Opis</th>
+            <th><%= __('books.description') %></th>
             <td id="book-description"><%= book.description %></td>
         </tr>
     </table>
 
     <div class="action-buttons">
-        <a href="/books" class="cancel-button">Powrót do listy</a>
-        <a href="/books/edit/<%= book.id_book %>" class="edit-button">Edytuj Książkę</a>
+        <a href="/books" class="cancel-button"><%= __('books.back_to_list') %></a>
+        <a href="/books/edit/<%= book.id_book %>" class="edit-button"><%= __('books.edit') %></a>
     </div>
 
-    <h2>Szczegóły Wypożyczeń</h2>
-    <% if (borrowings.length > 0) { %>
-        <table class="table-list">
-            <thead>
-            <tr>
-                <th>Imię i Nazwisko</th>
-                <th>Data Wypożyczenia</th>
-                <th>Data Zwrotu</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% for (let e of borrowings) { %>
+    <div class="details-table">
+        <h2><%= __('books.borrowings_title') %></h2>
+        <% if (borrowings.length > 0) { %>
+            <table class="reader-info-table">
+                <thead>
                 <tr>
-                    <td><%= e.reader_first_name %> <%= e.reader_last_name %></td>
-                    <td><%= new Date(e.borrow_date).toLocaleDateString('pl-PL') %></td>
-                    <td>
-                        <%= e.return_date ? new Date(e.return_date).toLocaleDateString('pl-PL') : 'Brak' %>
-                    </td>
+                    <th><%= __('books.reader_name') %></th>
+                    <th><%= __('books.borrow_date') %></th>
+                    <th><%= __('books.return_date') %></th>
                 </tr>
-            <% } %>
-            </tbody>
-        </table>
-    <% } else { %>
-        <p>Brak wypożyczeń dla tej książki.</p>
-    <% } %>
+                </thead>
+                <tbody>
+                <% for (let e of borrowings) { %>
+                    <tr>
+                        <td><%= e.reader_first_name %> <%= e.reader_last_name %></td>
+                        <td><%= new Date(e.borrow_date).toLocaleDateString(currentLanguage === 'pl' ? 'pl-PL' : 'en-GB') %></td>
+                        <td>
+                            <%= e.return_date ? new Date(e.return_date).toLocaleDateString(currentLanguage === 'pl' ? 'pl-PL' : 'en-GB') : __('books.no_return_date') %>
+                        </td>
+                    </tr>
+                <% } %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <p><%= __('books.no_borrowings') %></p>
+        <% } %>
+    </div>
 </main>
+
+
 <%- include('../../partials/footer.ejs') %>
 
