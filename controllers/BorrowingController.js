@@ -16,15 +16,33 @@ const formatDateForInput = (dateString) => {
 //pobranie wszystkich wypożyczeń
 exports.getAllBorrowings = async (req, res) => {
     try {
+        // Domyślne wartości paginacji
+        const page = parseInt(req.query.page) || 1; // Domyślnie strona 1
+        const limit = 3; // Stała liczba rekordów na stronę
+        const offset = (page - 1) * limit;
+
+        // Pobierz wypożyczenia z limitem i przesunięciem
         const [borrowings] = await req.db.query(`
             SELECT borrowing.id_borrow, borrowing.borrow_date, borrowing.return_date,
                    book.title AS book_title, reader.first_name AS reader_first_name, reader.last_name AS reader_last_name
             FROM borrowing
             JOIN book ON borrowing.id_book = book.id_book
             JOIN reader ON borrowing.id_reader = reader.id_reader
-        `);
+            LIMIT ? OFFSET ?
+        `, [limit, offset]);
+
+        // Pobierz całkowitą liczbę rekordów wypożyczeń
+        const [countResult] = await req.db.query('SELECT COUNT(*) AS count FROM borrowing');
+        const totalBorrowings = countResult[0].count;
+        const totalPages = Math.ceil(totalBorrowings / limit);
+
         res.render('pages/borrowing/list', {
             borrowings: borrowings,
+            currentPage: page,
+            totalPages: totalPages,
+            limit: limit,
+            originalUrl: req.originalUrl,
+            currentLanguage: res.locals.currentLanguage,
             navLocation: 'borrowings'
         });
     } catch (error) {
@@ -48,7 +66,9 @@ exports.showBorrowingDetails = async (req, res) => {
         res.render('pages/borrowing/details',
             {
                 borrowing: borrowing[0],
-                navLocation: 'borrowings'
+                navLocation: 'borrowings',
+                originalUrl: req.originalUrl,
+                currentLanguage: res.locals.currentLanguage
             });
     } catch (error) {
         res.status(500).send('Błąd serwera: ' + error.message);
@@ -67,18 +87,27 @@ exports.showCreateForm = async (req, res) => {
         navLocation: 'borrowings',
         readers: readers,
         books: books,
+        originalUrl: req.originalUrl,
+        currentLanguage: res.locals.currentLanguage,
         validationErrors: []
     });
 };
 
 // Tworzenie nowego wypożyczenia
 exports.createBorrowing = async (req, res) => {
+    const borrowingData = { ...req.body };
     const validationErrors = validateBorrowingData(req.body);
-    const { readers, books } = await fetchBooksAndReaders(req.db);
+
+    if (!borrowingData.return_date) {
+        borrowingData.return_date = null; // Ustawiamy na NULL, jeśli nie wprowadzono daty zwrotu
+    }
+
+    const [readers] = await req.db.query('SELECT * FROM reader');
+    const [books] = await req.db.query('SELECT * FROM book');
 
     if (validationErrors.length > 0) {
         return res.render('pages/borrowing/form', {
-            borrowing: req.body,
+            borrowing: borrowingData,
             pageTitle: 'Dodaj Nowe Wypożyczenie',
             formMode: 'createNew',
             btnLabel: 'Dodaj Wypożyczenie',
@@ -86,15 +115,16 @@ exports.createBorrowing = async (req, res) => {
             navLocation: 'borrowings',
             readers: readers,
             books: books,
-            validationErrors: validationErrors
+            validationErrors: [],
+            originalUrl: req.originalUrl,
+            currentLanguage: res.locals.currentLanguage
         });
     }
 
     try {
-        await req.db.query(`
-            INSERT INTO borrowing (id_book, id_reader, borrow_date, return_date) 
-            VALUES (?, ?, ?, ?)`,
-            [req.body.id_book, req.body.id_reader, req.body.borrow_date, req.body.return_date]
+        await req.db.query(
+            'INSERT INTO borrowing (id_book, id_reader, borrow_date, return_date) VALUES (?, ?, ?, ?)',
+            [borrowingData.id_book, borrowingData.id_reader, borrowingData.borrow_date, borrowingData.return_date]
         );
         res.redirect('/borrowings');
     } catch (error) {
@@ -121,12 +151,15 @@ exports.showEditForm = async (req, res) => {
         navLocation: 'borrowings',
         readers: readers,
         books: books,
+        originalUrl: req.originalUrl,
+        currentLanguage: res.locals.currentLanguage,
         validationErrors: []
     });
 };
 
 // Aktualizacja wypożyczenia
 exports.updateBorrowing = async (req, res) => {
+    const borrowingData = { ...req.body };
     const validationErrors = validateBorrowingData(req.body, true);
     const { readers, books } = await fetchBooksAndReaders(req.db);
 
@@ -140,6 +173,8 @@ exports.updateBorrowing = async (req, res) => {
             navLocation: 'borrowings',
             readers: readers,
             books: books,
+            originalUrl: req.originalUrl,
+            currentLanguage: res.locals.currentLanguage,
             validationErrors: validationErrors
         });
     }
@@ -148,7 +183,7 @@ exports.updateBorrowing = async (req, res) => {
         await req.db.query(`
             UPDATE borrowing SET id_book = ?, id_reader = ?, borrow_date = ?, return_date = ? 
             WHERE id_borrow = ?`,
-            [req.body.id_book, req.body.id_reader, req.body.borrow_date, req.body.return_date, req.params.id]
+            [borrowingData.id_book, borrowingData.id_reader, borrowingData.borrow_date, borrowingData.return_date, req.params.id]
         );
         res.redirect('/borrowings');
     } catch (error) {

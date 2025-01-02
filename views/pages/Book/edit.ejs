@@ -1,51 +1,51 @@
 <%- include('../../partials/header.ejs', { activePage: 'books' }) %>
 <main>
-    <h2>Edytuj Książkę</h2>
-<!--    <script src="/js/validateBookForm.js"></script>-->
-    <form class="edit-form" action="/books/edit/<%= book.id_book %>" method="POST" onsubmit="return validateForm();" novalidate>
+    <h1><%= __('books.form_edit_title') %></h1>
+    <form class="form" action="/books/edit/<%= book.id_book %>" method="POST" onsubmit="return validateForm();" novalidate>
 
-        <label for="title">Tytuł Książki:</label>
-        <input type="text" id="title" name="title" value="<%= book.title || '' %>" placeholder="Wpisz tytuł książki" required class="input-field">
+        <label for="title"><%= __('books.title_column') %>:</label>
+        <input type="text" id="title" name="title" value="<%= book.title || '' %>" placeholder="<%= __('books.title_column') %>" required class="input-field">
         <span id="errorTitle" class="error-text">
             <%= validationErrors && validationErrors.find(err => err.path === 'title') ? validationErrors.find(err => err.path === 'title').message : '' %>
         </span>
 
-        <label for="author">Autor:</label>
-        <input type="text" id="author" name="author" value="<%= book.author || ''%>" placeholder="Wpisz autora książki" required class="input-field">
+        <label for="author"><%= __('books.author') %>:</label>
+        <input type="text" id="author" name="author" value="<%= book.author || '' %>" placeholder="<%= __('books.author') %>" required class="input-field">
         <span id="errorAuthor" class="error-text">
             <%= validationErrors && validationErrors.find(err => err.path === 'author') ? validationErrors.find(err => err.path === 'author').message : '' %>
         </span>
 
-        <label for="year">Rok Publikacji:</label>
-        <input type="number" id="year" name="publication_year" value="<%= book.publication_year || ''%>" min="0" max="<%= new Date().getFullYear() %>" placeholder="Wpisz rok publikacji" required class="input-field">
+        <label for="year"><%= __('books.publication_year') %>:</label>
+        <input type="number" id="year" name="publication_year" value="<%= book.publication_year || '' %>" min="0" max="<%= new Date().getFullYear() %>" placeholder="<%= __('books.publication_year') %>" required class="input-field">
         <span id="errorYear" class="error-text">
             <%= validationErrors && validationErrors.find(err => err.path === 'publication_year') ? validationErrors.find(err => err.path === 'publication_year').message : '' %>
         </span>
 
-        <label for="genre">Gatunek:</label>
+        <label for="genre"><%= __('books.genre') %>:</label>
         <select id="genre" name="genre" required>
             <% genres.forEach(g => { %>
                 <option value="<%= g %>" <%= book.genre === g ? 'selected' : '' %>><%= g %></option>
             <% }) %>
         </select>
         <span class="error-text">
-            <%= validationErrors && validationErrors.find(err => err.path === 'genre') ? 'Nieprawidłowy gatunek książki' : '' %>
+            <%= validationErrors && validationErrors.find(err => err.path === 'genre') ? __('books.form_invalid_genre') : '' %>
         </span>
 
-        <label for="description">Opis:</label>
-        <textarea id="description" name="description" placeholder="Dodaj opis książki" required class="textarea-field"><%= book.description || '' %></textarea>
+        <label for="description"><%= __('books.description') %>:</label>
+        <textarea id="description" name="description" placeholder="<%= __('books.form_description_placeholder') %>" required class="textarea-field"><%= book.description || '' %></textarea>
         <span id="errorDescription" class="error-text">
             <%= validationErrors && validationErrors.find(err => err.path === 'description') ? validationErrors.find(err => err.path === 'description').message : '' %>
         </span>
 
         <span id="errorSummary" class="errorform-text">
             <% if (validationErrors && validationErrors.length > 0) { %>
-                Formularz zawiera błędy. Popraw wprowadzone dane.
+                <%= __('books.form_error_summary') %>
             <% } %>
         </span>
+
         <div class="action-buttons">
-            <button type="submit" class="submit-button">Zapisz Zmiany</button>
-            <a href="/books" class="cancel-button">Anuluj</a>
+            <button type="submit" class="submit-button"><%= __('books.form_save_changes') %></button>
+            <a href="/books" class="cancel-button"><%= __('books.form_cancel') %></a>
         </div>
     </form>
 </main>

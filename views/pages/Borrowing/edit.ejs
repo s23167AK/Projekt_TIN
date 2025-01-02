@@ -3,7 +3,7 @@
     <h2><%= pageTitle %></h2>
     <script src="/js/validationBorrorwingForm.js"></script>
 
-    <form class="borrowing-form" action="<%= formAction %>" method="POST" onsubmit="return validateForm();" novalidate>
+    <form class="form" action="<%= formAction %>" method="POST" onsubmit="return validateForm();" novalidate>
         <label for="reader">Czytelnik:</label>
         <select id="reader" name="id_reader" required class="input-field">
             <% readers.forEach(reader => { %>

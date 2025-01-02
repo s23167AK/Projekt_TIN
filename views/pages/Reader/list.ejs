@@ -1,35 +1,36 @@
 <%- include('../../partials/header.ejs', { activePage: 'readers' }) %>
 <main>
-<h1>Lista Czytelników</h1>
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Imię</th>
-        <th>Nazwisko</th>
-        <th>Email</th>
-        <th>Telefon</th>
-        <th>Akcje</th>
-    </tr>
-    </thead>
-    <tbody>
-    <% readers.forEach(reader => { %>
+    <h1><%= __('readers.title') %></h1>
+    <table>
+        <thead>
         <tr>
-        <td><%= reader.id_reader %></td>
-        <td><%= reader.first_name %></td>
-        <td><%= reader.last_name %></td>
-        <td><%= reader.email %></td>
-        <td><%= reader.phone %></td>
-        <td>
-        <a href="/readers/details/<%= reader.id_reader %>" class="details-button">Szczegóły</a>
-        <form action="/readers/delete/<%= reader.id_reader %>" method="POST" style="display: inline;">
-            <button type="submit" class="delete-button">Usuń</button>
-        </form>
-        </td>
+            <th><%= __('readers.first_name') %></th>
+            <th><%= __('readers.last_name') %></th>
+            <th><%= __('readers.email') %></th>
+            <th><%= __('readers.phone') %></th>
+            <th><%= __('readers.actions') %></th>
         </tr>
+        </thead>
+        <tbody>
+        <% readers.forEach(reader => { %>
+            <tr>
+                <td><%= reader.first_name %></td>
+                <td><%= reader.last_name %></td>
+                <td><%= reader.email %></td>
+                <td><%= reader.phone %></td>
+                <td>
+                    <a href="/readers/details/<%= reader.id_reader %>" class="details-button"><%= __('readers.details') %></a>
+                    <a href="/readers/edit/<%= reader.id_reader %>" class="edit-button"><%= __('readers.edit') %></a>
+                    <form action="/readers/delete/<%= reader.id_reader %>" method="POST" style="display: inline;">
+                        <button type="submit" class="delete-button"><%= __('readers.delete') %></button>
+                    </form>
+                </td>
+            </tr>
         <% }) %>
-    </tbody>
-</table>
-<a href="/readers/add" class="submit-button">Dodaj Nowego Czytelnika</a>
+        </tbody>
+    </table>
+    <a href="/readers/add" class="submit-button"><%= __('readers.add_new_reader') %></a>
+    <%- include('../../partials/pagination.ejs') %>
 </main>
+
 <%- include('../../partials/footer.ejs') %>

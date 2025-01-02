@@ -2,9 +2,28 @@ const { validateReaderData } = require('../helpers/validation');
 
 exports.getAllReaders = async (req, res) => {
     try {
-        const [readers] = await req.db.query('SELECT * FROM reader');
+        const page = parseInt(req.query.page) || 1; // Domyślnie strona 1
+        const limit = 3; // Stała liczba rekordów na stronę
+        const offset = (page - 1) * limit;
+
+        // Pobierz czytelników z limitem i przesunięciem
+        const [readers] = await req.db.query(
+            'SELECT * FROM reader LIMIT ? OFFSET ?',
+            [limit, offset]
+        );
+
+        // Pobierz całkowitą liczbę rekordów
+        const [countResult] = await req.db.query('SELECT COUNT(*) AS count FROM reader');
+        const totalReaders = countResult[0].count;
+        const totalPages = Math.ceil(totalReaders / limit);
+
         res.render('pages/reader/list', {
             readers: readers,
+            currentPage: page,
+            totalPages: totalPages,
+            limit: limit,
+            originalUrl: req.originalUrl,
+            currentLanguage: res.locals.currentLanguage,
             navLocation: 'readers',
         });
     } catch (error) {
@@ -29,6 +48,8 @@ exports.showReaderDetails = async (req, res) => {
         res.render('pages/reader/details', {
             reader: reader[0],
             borrowings: borrowings,
+            originalUrl: req.originalUrl,
+            currentLanguage: res.locals.currentLanguage,
             navLocation: 'readers',
         });
     } catch (error) {
@@ -44,6 +65,8 @@ exports.showCreateForm = (req, res) => {
         btnLabel: 'Dodaj Czytelnika',
         formAction: '/readers/add',
         navLocation: 'readers',
+        originalUrl: req.originalUrl,
+        currentLanguage: res.locals.currentLanguage,
         validationErrors: [],
     });
 };
@@ -60,13 +83,15 @@ exports.createReader = async (req, res) => {
             btnLabel: 'Dodaj Czytelnika',
             formAction: '/readers/add',
             navLocation: 'readers',
+            originalUrl: req.originalUrl,
+            currentLanguage: res.locals.currentLanguage,
             validationErrors: validationErrors,
         });
     }
 
     try {
         await req.db.query(
-            'INSERT INTO reader (first_name, last_name, email,phone) VALUES (?, ?, ?)',
+            'INSERT INTO reader (first_name, last_name, email,phone) VALUES (?, ?, ?, ?)',
             [readerData.first_name, readerData.last_name, readerData.email,readerData.phone]
         );
         res.redirect('/readers');
@@ -83,11 +108,10 @@ exports.showEditForm = async (req, res) => {
         }
         res.render('pages/reader/edit', {
             reader: reader[0],
-            pageTitle: 'Edytuj Czytelnika',
-            formMode: 'edit',
-            btnLabel: 'Zapisz Zmiany',
             formAction: `/readers/edit/${req.params.id}`,
             navLocation: 'readers',
+            originalUrl: req.originalUrl,
+            currentLanguage: res.locals.currentLanguage,
             validationErrors: [],
         });
     } catch (error) {
@@ -104,11 +128,10 @@ exports.updateReader = async (req, res) => {
     if (validationErrors.length > 0) {
         return res.render('pages/reader/edit', {
             reader: { ...readerData, id_reader: readerId },
-            pageTitle: 'Edytuj Czytelnika',
-            formMode: 'edit',
-            btnLabel: 'Zapisz Zmiany',
             formAction: `/readers/edit/${readerId}`,
             navLocation: 'readers',
+            originalUrl: req.originalUrl,
+            currentLanguage: res.locals.currentLanguage,
             validationErrors: validationErrors,
         });
     }

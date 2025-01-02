@@ -1,38 +1,39 @@
 <%- include('../../partials/header.ejs', { activePage: 'readers' }) %>
 <main>
-    <h2 id="reader-name"><%= reader.first_name %> <%= reader.last_name %></h2>
-    <table class="reader-info-table">
-        <tr>
-            <th>Imię</th>
-            <td id="reader-first-name"><%= reader.first_name %></td>
-        </tr>
-        <tr>
-            <th>Nazwisko</th>
-            <td id="reader-last-name"><%= reader.last_name %></td>
-        </tr>
-        <tr>
-            <th>Email</th>
-            <td id="reader-email"><%= reader.email %></td>
-        </tr>
-        <tr>
-            <th>Telefon</th>
-            <td id="reader-phone"><%= reader.phone %></td>
-        </tr>
-    </table>
+<h2 id="reader-name"><%= reader.first_name %> <%= reader.last_name %></h2>
+<table class="book-info-table">
+    <tr>
+        <th><%= __('readers.first_name') %></th>
+        <td id="reader-first-name"><%= reader.first_name %></td>
+    </tr>
+    <tr>
+        <th><%= __('readers.last_name') %></th>
+        <td id="reader-last-name"><%= reader.last_name %></td>
+    </tr>
+    <tr>
+        <th><%= __('readers.email') %></th>
+        <td id="reader-email"><%= reader.email %></td>
+    </tr>
+    <tr>
+        <th><%= __('readers.phone') %></th>
+        <td id="reader-phone"><%= reader.phone %></td>
+    </tr>
+</table>
 
-    <div class="action-buttons">
-        <a href="/readers" class="cancel-button">Powrót do listy</a>
-        <a href="/readers/edit/<%= reader.id_reader %>" class="edit-button">Edytuj Czytelnika</a>
-    </div>
+<div class="action-buttons">
+    <a href="/readers" class="cancel-button"><%= __('readers.back_to_list') %></a>
+    <a href="/readers/edit/<%= reader.id_reader %>" class="edit-button"><%= __('readers.edit_reader') %></a>
+</div>
 
-    <h3>Historia Wypożyczeń</h3>
+<div class="details-table">
+    <h2><%= __('readers.borrowings_title') %></h2>
     <% if (borrowings.length > 0) { %>
-        <table class="table-list">
+        <table class="reader-info-table">
             <thead>
             <tr>
-                <th>Tytuł Książki</th>
-                <th>Data Wypożyczenia</th>
-                <th>Data Zwrotu</th>
+                <th><%= __('readers.book_title') %></th>
+                <th><%= __('readers.borrow_date') %></th>
+                <th><%= __('readers.return_date') %></th>
             </tr>
             </thead>
             <tbody>
@@ -41,14 +42,15 @@
                     <td><%= e.book_title %></td>
                     <td><%= new Date(e.borrow_date).toLocaleDateString('pl-PL') %></td>
                     <td>
-                        <%= e.return_date ? new Date(e.return_date).toLocaleDateString('pl-PL') : 'Brak' %>
+                        <%= e.return_date ? new Date(e.return_date).toLocaleDateString('pl-PL') : __('readers.empty') %>
                     </td>
                 </tr>
             <% }); %>
             </tbody>
         </table>
     <% } else { %>
-        <p>Brak wypożyczeń dla tego czytelnika.</p>
+        <p><%= __('readers.no_borrowings') %></p>
     <% } %>
+</div>
 </main>
 <%- include('../../partials/footer.ejs') %>

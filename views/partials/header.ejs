@@ -1,21 +1,25 @@
 <!DOCTYPE html>
-<html lang="pl-PL">
+<html lang="<%= currentLanguage %>">
 <head>
     <link href="/stylesheets/style.css" rel="stylesheet">
     <meta charset="UTF-8">
-    <title>Biblioteka</title>
+    <title><%= __('header.home') %> - Biblioteka</title>
 </head>
 <body>
 <header>
     <nav class="navigation wrapper">
-        <img src="/assets/logo.png" alt="logo biblioteki" width="230">
+        <img src="/assets/logo.png" alt="<%= __('header.logo_alt') %>" width="230">
         <ul>
-            <li><a class="active" href="/">Strona główna</a></li>
-            <li><a href="/books">Książki</a></li>
-            <li><a href="/borrowings">Wypożyczenia</a></li>
-            <li><a href="/readers">Czytelnicy</a></li>
-            <li><a href="/login">Logowanie</a></li>
-            <li><a href="/register">Rejestracja</a></li>
+            <li><a href="/" class="<%= navLocation === 'main' ? 'active' : '' %>"><%= __('header.home') %></a></li>
+            <li><a href="/books" class="<%= navLocation === 'books' ? 'active' : '' %>"><%= __('header.books') %></a></li>
+            <li><a href="/borrowings" class="<%= navLocation === 'borrowings' ? 'active' : '' %>"><%= __('header.borrowings') %></a></li>
+            <li><a href="/readers" class="<%= navLocation === 'readers' ? 'active' : '' %>"><%= __('header.readers') %></a></li>
         </ul>
+        <div class="language-switcher">
+            <form method="get" action="<%= originalUrl %>">
+                <button type="submit" name="lang" value="pl" class="<%= currentLanguage === 'pl' ? 'active' : '' %>">PL</button>
+                <button type="submit" name="lang" value="en" class="<%= currentLanguage === 'en' ? 'active' : '' %>">EN</button>
+            </form>
+        </div>
     </nav>
 </header>

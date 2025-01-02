@@ -87,14 +87,14 @@ nav ul li a {
   text-decoration: none;
   padding: 10px 20px;
   border-radius: 5px;
-  background-color: #ffa500;
+  background-color: #ff9b37;
 }
 
 nav ul li a:hover,
 nav ul li a.active {
-  background-color: #cc5800;
+  background-color: #b7581c;
 }
-form {
+.form {
   background-color: #f9f9f9;
   padding: 20px;
   margin: 20px auto;
@@ -124,16 +124,15 @@ form textarea {
 }
 form select {
   background-color: white;
-  appearance: none; /* Ukrycie domyślnej strzałki przeglądarki */
+  appearance: none;
   -moz-appearance: none;
   -webkit-appearance: none;
   cursor: pointer;
 }
 
-/* Dodatkowe style dla textarea */
 form textarea {
-  resize: none; /* Wyłączenie możliwości zmiany rozmiaru */
-  height: 100px; /* Stała wysokość */
+  resize: none;
+  height: 100px;
 }
 form input[type="submit"] {
   background-color: #ffa500;
@@ -147,9 +146,8 @@ form input[type="submit"]:hover {
 }
 h2,
 h1 {
-  color: #cc5800;
+  color: #b7581c;
 }
-
 
 ol {
 
@@ -172,10 +170,6 @@ ol li:hover {
   color: white;
 
 }
-
-
-
-
 
 main {
   text-align: center;
@@ -200,40 +194,48 @@ table th, table td {
 }
 
 table th {
-  background-color: #cc5800;
+  background-color: #b7581c;
   color: white;
 }
 
 table tr:nth-child(even) {
   background-color: #f2f2f2;
 }
-
-
+a.submit-button {
+  margin: 20px 0;
+  display: inline-block;
+}
 
 button.submit-button,
 button.details-button,
 button.edit-button{
   padding: 10px 20px;
   margin: 5px;
-  background-color: #ffa500;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
-
-button.submit-button:hover,
-button.details-button:hover,
-button.edit-button:hover{
-  background-color: #cc5800;
+button.edit-button{
+  background-color: #cd7f32;
+}
+button.submit-button,
+button.details-button{
+  background-color: #ff9b37;
 }
 
+button.submit-button:hover,
+button.details-button:hover{
+  background-color: #b7581c;
+}
+button.edit-button:hover{
+
+}
 a.submit-button,
 a.details-button,
 a.edit-button,
-a.cancel-button{
-  text-decoration: none; /* Usunięcie podkreślenia */
-  background-color: #ffa500;
+a.cancel-button {
+  text-decoration: none;
   padding: 10px 20px;
   color: white;
   border: none;
@@ -242,12 +244,25 @@ a.cancel-button{
   font-size: 14px;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
+a.submit-button,
+a.details-button,
+a.cancel-button{
+  background-color: #ff9b37;
+}
+a.edit-button{
+  background-color: #cd7f32;
+}
+a.details-button,
+a.edit-button,
+a.cancel-button {
+  margin-right: 10px;
+}
 
 a.submit-button:hover,
 a.details-button:hover,
 a.edit-button:hover,
-a.cancel-button:hover{
-  background-color: #cc5800;
+a.cancel-button:hover {
+  background-color: #b7581c;
 }
 
 footer {
@@ -424,20 +439,51 @@ input.error-input:focus, textarea.error-input:focus, select.error-input:focus {
 
 .pagination a {
   text-decoration: none;
-  color: #007bff;
+  color: #b7581c;
   padding: 5px 10px;
-  border: 1px solid #ddd;
   margin: 0 5px;
   border-radius: 3px;
 }
 
 .pagination a.active {
-  background-color: #007bff;
-  color: white;
+  background-color: white;
+  color: #994916;
   font-weight: bold;
+  text-decoration: underline;
 }
 
 .pagination a:hover {
   background-color: #f1f1f1;
+}
+
+.language-switcher {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.language-switcher button {
+  background-color: #ff9b37;
+  padding: 5px 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  color: white;
+}
+
+.language-switcher button.active {
+  background-color: #b7581c;
+  font-weight: bold;
+  color: white;
+}
+
+.language-switcher button:hover {
+  background-color: #b7581c;
+  color: white;
+}
+.details-table{
+  margin-top: 50px;
 }
 

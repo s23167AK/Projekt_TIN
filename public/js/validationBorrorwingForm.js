@@ -6,6 +6,7 @@ function isValidDate(dateString) {
     const date = new Date(dateString);
     return date instanceof Date && !isNaN(date);
 }
+
 function validateForm() {
     let isValid = true;
     let errorSummary = "";
@@ -56,21 +57,25 @@ function validateForm() {
             isValid = false;
         }
     }
-    if (!returnDate) {
-        errorReturnDate.textContent = "Pole Data oddania jest wymagane.";
-        errorSummary += "Błąd w polu Data oddania.\n";
-        isValid = false;
-    } else if (!isValidDate(returnDate)) {
-        errorReturnDate.textContent = "Podaj poprawną datę oddania (YYYY-MM-DD).";
-        errorSummary += "Błąd w polu Data oddania.\n";
-        isValid = false;
-    } else if (borrowDate && isValidDate(borrowDate) && isValidDate(returnDate)) {
-        const borrow = new Date(borrowDate);
-        const returnD = new Date(returnDate);
-        if (returnD < borrow) {
-            errorReturnDate.textContent = "Data oddania nie może być wcześniejsza niż data wypożyczenia.";
+
+    // Walidacja pola returnDate tylko w trybie edycji
+    if (isEdit) {
+        if (!returnDate) {
+            errorReturnDate.textContent = "Pole Data oddania jest wymagane w trybie edycji.";
             errorSummary += "Błąd w polu Data oddania.\n";
             isValid = false;
+        } else if (!isValidDate(returnDate)) {
+            errorReturnDate.textContent = "Podaj poprawną datę oddania (YYYY-MM-DD).";
+            errorSummary += "Błąd w polu Data oddania.\n";
+            isValid = false;
+        } else if (borrowDate && isValidDate(borrowDate) && isValidDate(returnDate)) {
+            const borrow = new Date(borrowDate);
+            const returnD = new Date(returnDate);
+            if (returnD < borrow) {
+                errorReturnDate.textContent = "Data oddania nie może być wcześniejsza niż data wypożyczenia.";
+                errorSummary += "Błąd w polu Data oddania.\n";
+                isValid = false;
+            }
         }
     }
 

@@ -1,3 +1,5 @@
+const genres = ['Powieść', 'Dramat', 'Fantasy', 'Historyczna', 'Sci-Fi', 'Przygodowa'];
+
 // Funkcja walidacji danych książki
 exports.validateBookData = (bookData) => {
     const currentYear = new Date().getFullYear();
